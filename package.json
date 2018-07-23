@@ -1,0 +1,11 @@
+{
+  "name": "panda-pom",
+  "version": "1.0.0",
+  "description": "Pomodoro timer for tracking work, INST-style",
+  "main": "index.js",
+  "author": "<xmoffatt@instructure.com>",
+  "license": "MIT",
+  "dependencies": {
+    "nuxt": "^1.4.1"
+  }
+}
