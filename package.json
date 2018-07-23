@@ -6,6 +6,7 @@
   "author": "<xmoffatt@instructure.com>",
   "license": "MIT",
   "dependencies": {
+    "bulma": "^0.7.1",
     "nuxt": "^1.4.1"
   }
 }
