@@ -10,7 +10,11 @@
         </div>
         <div class="has-small-h-pad">
           <p class="heading">Goal Today</p>
-          <p class="title">{{goal}}</p>
+          <div class="field">
+            <div class="control">
+              <input class="input title has-text-centered" type="text" :value="goal" @input="changeGoal">
+            </div>
+          </div>
         </div>
       </div>
       <div class="level-item">
@@ -125,6 +129,9 @@ export default {
           : this.blockType === blockTypes.LONG_BREAK
             ? LONG_BREAK_TIME
             : SHORT_BREAK_TIME;
+    },
+    changeGoal({ target: { value } }) {
+      this.goal = parseInt(value || "0");
     }
   }
 };
@@ -139,6 +146,10 @@ export default {
 }
 .is-number {
   font-family: "Arial", monospace;
+}
+.input.title {
+  width: 5rem;
+  height: 2.25rem;
 }
 .is-flex-centered {
   display: flex;
