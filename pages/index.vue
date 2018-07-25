@@ -148,8 +148,10 @@ export default {
   font-family: "Arial", monospace;
 }
 .input.title {
-  width: 5rem;
-  height: 2.25rem;
+  width: 5.5rem;
+  height: inherit;
+  padding-top: 0px;
+  padding-bottom: 0px;
 }
 .is-flex-centered {
   display: flex;
