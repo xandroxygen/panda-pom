@@ -71,6 +71,9 @@ export default {
       blockType: blockTypes.POMODORO,
       isRunning: false,
       interval: false,
+      shouldNotify: false,
+      autostart: true,
+      breakCounter: 0,
       POMODORO: blockTypes.POMODORO,
       SHORT_BREAK: blockTypes.SHORT_BREAK,
       LONG_BREAK: blockTypes.LONG_BREAK
@@ -101,17 +104,30 @@ export default {
       }
 
       this.interval = setInterval(() => {
-        if (this.time <= 0) {
-          this.completeBlock();
-          this.resetBlock();
-        }
         this.time -= 1;
+        if (this.time <= 0) {
+          this.stopBlock();
+          this.completeBlock().then(() => {
+            if (this.autostart) {
+              this.nextBlockType();
+          this.resetBlock();
+              this.startBlock();
+        }
+          });
+        }
       }, 1000);
       this.isRunning = true;
     },
-    completeBlock() {
+    async completeBlock() {
       if (this.blockType === blockTypes.POMODORO) {
         this.completed += 1;
+        const message =
+          this.completed === this.goal
+            ? "You achieved your goal! 🙌🏻 "
+            : "Pomodoro completed! 🚀 ";
+        await this.notify(message);
+      } else {
+        await this.notify("Your break is over, back to work!");
       }
     },
     stopBlock() {
@@ -122,7 +138,6 @@ export default {
       this.isRunning = false;
     },
     resetBlock() {
-      this.stopBlock();
       this.time =
         this.blockType === blockTypes.POMODORO
           ? POMODORO_TIME
@@ -132,6 +147,42 @@ export default {
     },
     changeGoal({ target: { value } }) {
       this.goal = parseInt(value || "0");
+    },
+    async notify(body) {
+      if (this.shouldNotify) {
+        const notification = new Notification("PandaPom", {
+          body
+        });
+        return new Promise((resolve, reject) => {
+          setTimeout(() => {
+            notification.close.bind(notification);
+            resolve();
+          }, 4000);
+          notification.onclick = () => resolve();
+        });
+      }
+      return Promise.resolve();
+    },
+    nextBlockType() {
+      if (this.blockType === blockTypes.POMODORO) {
+        if (this.breakCounter === 3) {
+          this.breakCounter = 0;
+          this.blockType = blockTypes.LONG_BREAK;
+        } else {
+          this.breakCounter += 1;
+          this.blockType = blockTypes.SHORT_BREAK;
+        }
+      } else {
+        this.blockType = blockTypes.POMODORO;
+      }
+    }
+  },
+  async mounted() {
+    if (Notification.permission !== "granted") {
+      const result = await Notification.requestPermission();
+      this.shouldNotify = result === "granted";
+    } else {
+      this.shouldNotify = true;
     }
   }
 };
