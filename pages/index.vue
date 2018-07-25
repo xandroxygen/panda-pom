@@ -47,6 +47,33 @@
     <div class="is-flex-centered">
       <h1 class="is-huge is-number">{{parsedTime}}</h1>
     </div> 
+    <div class="field">
+      <label class="label">Preferences</label>
+    </div>
+    <div class="field">
+      <div class="control">
+        <label class="checkbox">
+          <input type="checkbox" v-model="autostart">
+          Auto-start pomodoros and breaks?
+        </label>
+      </div>
+    </div>
+    <div class="field">
+      <div class="control">
+        <label class="checkbox">
+          <input type="checkbox" v-model="shouldShowTimerInTitle">
+          Show timer in page title?
+        </label>
+      </div>
+    </div>
+    <div class="field">
+      <div class="control">
+        <label class="checkbox">
+          <input type="checkbox" v-model="shouldNotify">
+          Browser notifications?
+        </label>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -72,8 +99,9 @@ export default {
       blockType: blockTypes.POMODORO,
       state: state.IDLE,
       interval: false,
-      shouldNotify: false,
+      shouldNotify: true,
       autostart: true,
+      shouldShowTimerInTitle: true,
       breakCounter: 0,
       POMODORO: blockTypes.POMODORO,
       SHORT_BREAK: blockTypes.SHORT_BREAK,
@@ -88,7 +116,7 @@ export default {
       return `${min}:${prettySec}`;
     },
     pageTitle() {
-      return this.state === state.ACTIVE
+      return this.state === state.ACTIVE && this.shouldShowTimerInTitle
         ? `(${this.parsedTime}) PandaPom`
         : `PandaPom`;
     }
@@ -184,14 +212,38 @@ export default {
       } else {
         this.blockType = blockTypes.POMODORO;
       }
+    },
+    useStoredValueOrDefault(name) {
+      const value = localStorage.getItem(name);
+      const parsed = value && JSON.parse(value);
+      return parsed !== undefined ? parsed : this[name];
+    }
+  },
+
+  watch: {
+    autostart(value) {
+      localStorage.setItem("autostart", JSON.stringify(value));
+    },
+    shouldNotify(value) {
+      localStorage.setItem("shouldNotify", JSON.stringify(value));
+      if (value && Notification.permission !== "granted") {
+        Notification.requestPermission();
+      }
+    },
+    shouldShowTimerInTitle(value) {
+      localStorage.setItem("shouldShowTimerInTitle", JSON.stringify(value));
     }
   },
   async mounted() {
-    if (Notification.permission !== "granted") {
+    this.autostart = this.useStoredValueOrDefault("autostart");
+    this.shouldShowTimerInTitle = this.useStoredValueOrDefault(
+      "shouldShowTimerInTitle"
+    );
+
+    this.shouldNotify = this.useStoredValueOrDefault("shouldNotify");
+    if (this.shouldNotify && Notification.permission !== "granted") {
       const result = await Notification.requestPermission();
       this.shouldNotify = result === "granted";
-    } else {
-      this.shouldNotify = true;
     }
   }
 };
@@ -218,5 +270,3 @@ export default {
   justify-content: center;
 }
 </style>
-
-
