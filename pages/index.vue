@@ -1,5 +1,6 @@
 <template>
   <div class="container">
+    <page-title :title="pageTitle"></page-title>
     <h1 class="title">PandaPom</h1>
     <div class="level">
       <div class="level-item has-text-centered">
@@ -48,12 +49,16 @@
 <script>
 import "bulma/css/bulma.css";
 import * as blockTypes from "../assets/blockTypes.js";
+import PageTitle from "../components/page-title.vue";
 
 const POMODORO_TIME = 25 * 60;
 const LONG_BREAK_TIME = 10 * 60;
 const SHORT_BREAK_TIME = 5 * 60;
 
 export default {
+  components: {
+    PageTitle
+  },
   data() {
     return {
       completed: 0,
@@ -73,6 +78,9 @@ export default {
       const sec = this.time % 60;
       const prettySec = sec < 10 ? `0${sec}` : sec;
       return `${min}:${prettySec}`;
+    },
+    pageTitle() {
+      return this.isRunning ? `(${this.parsedTime}) PandaPom` : `PandaPom`;
     }
   },
   methods: {
