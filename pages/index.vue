@@ -53,11 +53,12 @@
 <script>
 import "bulma/css/bulma.css";
 import * as blockTypes from "../assets/blockTypes.js";
+import * as state from "../assets/state.js";
 import PageTitle from "../components/page-title.vue";
 
-const POMODORO_TIME = 25 * 60;
-const LONG_BREAK_TIME = 10 * 60;
-const SHORT_BREAK_TIME = 5 * 60;
+const POMODORO_TIME = 5; // 25 * 60;
+const LONG_BREAK_TIME = 4; // 10 * 60;
+const SHORT_BREAK_TIME = 3; // 5 * 60;
 
 export default {
   components: {
@@ -69,7 +70,7 @@ export default {
       goal: 10,
       time: POMODORO_TIME,
       blockType: blockTypes.POMODORO,
-      isRunning: false,
+      state: state.IDLE,
       interval: false,
       shouldNotify: false,
       autostart: true,
@@ -87,7 +88,9 @@ export default {
       return `${min}:${prettySec}`;
     },
     pageTitle() {
-      return this.isRunning ? `(${this.parsedTime}) PandaPom` : `PandaPom`;
+      return this.state === state.ACTIVE
+        ? `(${this.parsedTime}) PandaPom`
+        : `PandaPom`;
     }
   },
   methods: {
@@ -99,7 +102,7 @@ export default {
       return { "is-primary is-selected is-outlined": this.blockType === type };
     },
     startBlock() {
-      if (this.isRunning) {
+      if (this.state === state.ACTIVE) {
         return;
       }
 
@@ -107,18 +110,14 @@ export default {
         this.time -= 1;
         if (this.time <= 0) {
           this.stopBlock();
-          this.completeBlock().then(() => {
-            if (this.autostart) {
-              this.nextBlockType();
-          this.resetBlock();
-              this.startBlock();
-        }
-          });
+          this.completeBlock();
         }
       }, 1000);
-      this.isRunning = true;
+      this.state = state.ACTIVE;
     },
     async completeBlock() {
+      this.state = this.autostart ? state.TRANSITION : state.IDLE;
+
       if (this.blockType === blockTypes.POMODORO) {
         this.completed += 1;
         const message =
@@ -129,15 +128,25 @@ export default {
       } else {
         await this.notify("Your break is over, back to work!");
       }
+
+      if (this.autostart && this.state === state.TRANSITION) {
+        this.nextBlockType();
+        this.resetBlock();
+        this.startBlock();
+      } else if (this.state !== state.TRANSITION) {
+        this.resetBlock();
+      }
     },
     stopBlock() {
-      if (!this.isRunning) {
-        return;
+      if (this.state === state.ACTIVE) {
+        clearInterval(this.interval);
+        this.state = state.STOPPED;
+      } else if (this.state === state.TRANSITION) {
+        this.state = state.IDLE;
       }
-      clearInterval(this.interval);
-      this.isRunning = false;
     },
     resetBlock() {
+      this.state = state.IDLE;
       this.time =
         this.blockType === blockTypes.POMODORO
           ? POMODORO_TIME
