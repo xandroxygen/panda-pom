@@ -2,7 +2,12 @@
   <div class="container">
     <page-title :title="pageTitle"></page-title>
     <h1 class="title">PandaPom</h1>
+    <div class="is-flex-centered">
+      <h1 class="is-huge is-number">{{parsedTime}}</h1>
+    </div> 
+    <progress-tracker class="is-flex-centered" :expected="goal" :actual="completed" :is-active="isPomActive"></progress-tracker>
     <div class="level">
+      <div class="level-left">
       <div class="level-item has-text-centered">
         <div>
           <p class="heading">Goal Today</p>
@@ -13,6 +18,14 @@
           </div>
         </div>
       </div>
+      <div class="level-item">
+        <div class="buttons">
+          <span @click="toggleBlock" class="button is-large is-primary"><font-awesome-icon :icon="startStopIcon" size="lg" /></span>
+          <span @click="resetBlock" class="button is-large is-info"><font-awesome-icon icon="redo" size="lg" /></span>
+        </div>
+      </div>
+      </div>
+      <div class="level-right">
       <div class="level-item">
         <div class="buttons has-addons">
           <span 
@@ -32,18 +45,8 @@
           >Long Break</span>
         </div>
       </div>
-      <div class="level-item">
-        <div class="buttons">
-          <span @click="startBlock" class="button is-success">Start</span>
-          <span @click="stopBlock" class="button is-danger">Stop</span>
-          <span @click="resetBlock" class="button is-info">Reset</span>
-        </div>
       </div>
     </div>
-    <div class="is-flex-centered">
-      <h1 class="is-huge is-number">{{parsedTime}}</h1>
-    </div> 
-    <progress-tracker class="is-flex-centered" :expected="goal" :actual="completed" :is-active="isPomActive"></progress-tracker>
     <div class="field">
       <label class="label">Preferences</label>
     </div>
@@ -81,6 +84,12 @@ import * as state from "../assets/state.js";
 import PageTitle from "../components/page-title.vue";
 import ProgressTracker from "../components/progress-tracker.vue";
 
+import { library } from "@fortawesome/fontawesome-svg-core";
+import { faPause, faRedo, faPlay } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
+
+library.add(faPause, faRedo, faPlay);
+
 const POMODORO_TIME = 5; // 25 * 60;
 const LONG_BREAK_TIME = 4; // 10 * 60;
 const SHORT_BREAK_TIME = 3; // 5 * 60;
@@ -88,7 +97,8 @@ const SHORT_BREAK_TIME = 3; // 5 * 60;
 export default {
   components: {
     PageTitle,
-    ProgressTracker
+    ProgressTracker,
+    FontAwesomeIcon
   },
   data() {
     return {
@@ -124,9 +134,19 @@ export default {
         this.blockType === blockTypes.POMODORO &&
         (this.state === state.ACTIVE || this.state === state.STOPPED)
       );
+    },
+    startStopIcon() {
+      return this.state === state.ACTIVE ? "pause" : "play";
     }
   },
   methods: {
+    toggleBlock() {
+      if (this.state === state.ACTIVE) {
+        this.stopBlock();
+      } else {
+        this.startBlock();
+      }
+    },
     changeBlockType(type) {
       this.blockType = type;
       this.resetBlock();
@@ -261,7 +281,7 @@ export default {
   padding: 0 0.5rem;
 }
 .is-huge {
-  font-size: 95px;
+  font-size: 10rem;
 }
 .is-number {
   font-family: "Arial", monospace;
