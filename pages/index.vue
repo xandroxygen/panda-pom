@@ -45,31 +45,56 @@
         </div>
       </div>
     </div>
-    <div class="field">
-      <label class="label">Preferences</label>
-    </div>
-    <div class="field">
-      <div class="control">
-        <label class="checkbox">
-          <input type="checkbox" v-model="autostart">
-          Auto-start pomodoros and breaks?
-        </label>
-      </div>
-    </div>
-    <div class="field">
-      <div class="control">
-        <label class="checkbox">
-          <input type="checkbox" v-model="shouldShowTimerInTitle">
-          Show timer in page title?
-        </label>
-      </div>
-    </div>
-    <div class="field">
-      <div class="control">
-        <label class="checkbox">
-          <input type="checkbox" v-model="shouldNotify">
-          Browser notifications?
-        </label>
+    <div>
+      <!-- <div class="level" v-if="!showPreferences">
+        <div class="level-left">
+          <div class="level-item">
+            <div class="button is-medium"  @click="togglePreferences" @mouseover="togglePrefTitle" @mouseout="showPrefTitle = false">
+              <font-awesome-icon class="settings icon" icon="cog"/>
+            </div>
+          </div>
+          <div class="level-item" :class="fadePrefTitle">
+              <span class="is-size-4">Show Preferences</span>
+            </div>
+        </div>
+      </div> -->
+      <div class="pane" :class="animatePreferences">
+        <div class="level">
+          <div class="level-left">
+            <div class="level-item">
+              <div class="button is-medium"  @click="togglePreferences" @mouseover="togglePrefTitle" @mouseout="showPrefTitle = false">
+                <font-awesome-icon class="settings icon" icon="cog"/>
+              </div>
+            </div>
+            <div class="level-item" :class="fadePrefTitle">
+              <span class="is-size-4">{{prefTitleText}}</span>
+            </div>
+          </div>
+        </div>
+        <div class="field">
+          <div class="control">
+            <label class="checkbox">
+              <input type="checkbox" v-model="autostart">
+              Auto-start pomodoros and breaks?
+            </label>
+          </div>
+        </div>
+        <div class="field">
+          <div class="control">
+            <label class="checkbox">
+              <input type="checkbox" v-model="shouldShowTimerInTitle">
+              Show timer in page title?
+            </label>
+          </div>
+        </div>
+        <div class="field">
+          <div class="control">
+            <label class="checkbox">
+              <input type="checkbox" v-model="shouldNotify">
+              Browser notifications?
+            </label>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -83,10 +108,15 @@ import PageTitle from "../components/page-title.vue";
 import ProgressTracker from "../components/progress-tracker.vue";
 
 import { library } from "@fortawesome/fontawesome-svg-core";
-import { faPause, faRedo, faPlay } from "@fortawesome/free-solid-svg-icons";
+import {
+  faPause,
+  faRedo,
+  faPlay,
+  faCog
+} from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 
-library.add(faPause, faRedo, faPlay);
+library.add(faPause, faRedo, faPlay, faCog);
 
 const POMODORO_TIME = 5; // 25 * 60;
 const LONG_BREAK_TIME = 4; // 10 * 60;
@@ -110,6 +140,8 @@ export default {
       autostart: true,
       shouldShowTimerInTitle: true,
       breakCounter: 0,
+      showPreferences: false,
+      showPrefTitle: false,
       POMODORO: blockTypes.POMODORO,
       SHORT_BREAK: blockTypes.SHORT_BREAK,
       LONG_BREAK: blockTypes.LONG_BREAK
@@ -135,9 +167,37 @@ export default {
     },
     startStopIcon() {
       return this.state === state.ACTIVE ? "pause" : "play";
+    },
+    fadePrefTitle() {
+      const show = this.showPrefTitle || this.showPreferences;
+      return {
+        "fade-in-left": show,
+        "fade-out-left": !show
+      };
+    },
+    prefTitleText() {
+      return this.showPreferences ? "Preferences" : "Show Preferences";
+    },
+    animatePreferences() {
+      return {
+        "reveal-top-left": this.showPreferences,
+        "hide-top-left": !this.showPreferences
+      };
     }
   },
   methods: {
+    togglePreferences() {
+      this.showPreferences = !this.showPreferences;
+      if (this.showPreferences) {
+        this.showPrefTitle = false;
+      }
+    },
+    togglePrefTitle() {
+      this.showPrefTitle = true;
+      if (this.showPreferences) {
+        this.showPrefTitle = false;
+      }
+    },
     toggleBlock() {
       if (this.state === state.ACTIVE) {
         this.stopBlock();
@@ -294,5 +354,140 @@ export default {
 .is-flex-centered {
   display: flex;
   justify-content: center;
+}
+.settings.icon {
+  color: #00d1b2;
+  pointer-events: none;
+}
+.pane {
+  border-radius: 4px;
+  width: 20rem;
+  padding: 0.5rem;
+}
+.fade-in-left {
+  -webkit-animation: fade-in-left 0.3s cubic-bezier(0.39, 0.575, 0.565, 1) both;
+  animation: fade-in-left 0.3s cubic-bezier(0.39, 0.575, 0.565, 1) both;
+  pointer-events: none;
+}
+.reveal-top-left {
+  transform-origin: left;
+  animation: reveal-text cubic-bezier(0.785, 0.135, 0.15, 0.86) 0.3s forwards;
+}
+.hide-top-left {
+  transform-origin: left;
+  animation: hide-text cubic-bezier(0.785, 0.135, 0.15, 0.86) 0.3s forwards;
+}
+.reveal-color {
+  transform-origin: left;
+  animation: reveal-color cubic-bezier(0.785, 0.135, 0.15, 0.86) 0.3s forwards;
+}
+.hide-color {
+  transform-origin: left;
+  animation: hide-color cubic-bezier(0.785, 0.135, 0.15, 0.86) 0.3s forwards;
+}
+/* ----------------------------------------------
+ * Generated by Animista on 2018-7-26 14:57:53
+ * w: http://animista.net, t: @cssanimista
+ * ---------------------------------------------- */
+
+/**
+ * ----------------------------------------
+ * animation fade-in-left
+ * ----------------------------------------
+ */
+@-webkit-keyframes fade-in-left {
+  0% {
+    -webkit-transform: translateX(-10px);
+    transform: translateX(-10px);
+    opacity: 0;
+  }
+  100% {
+    -webkit-transform: translateX(0);
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+@keyframes fade-in-left {
+  0% {
+    -webkit-transform: translateX(-10px);
+    transform: translateX(-10px);
+    opacity: 0;
+  }
+  100% {
+    -webkit-transform: translateX(0);
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+.fade-out-left {
+  -webkit-animation: fade-out-left 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94)
+    both;
+  animation: fade-out-left 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+}
+/* ----------------------------------------------
+ * Generated by Animista on 2018-7-26 15:7:42
+ * w: http://animista.net, t: @cssanimista
+ * ---------------------------------------------- */
+
+/**
+ * ----------------------------------------
+ * animation fade-out-left
+ * ----------------------------------------
+ */
+@-webkit-keyframes fade-out-left {
+  0% {
+    -webkit-transform: translateX(0);
+    transform: translateX(0);
+    opacity: 1;
+  }
+  100% {
+    -webkit-transform: translateX(-10px);
+    transform: translateX(-10px);
+    opacity: 0;
+  }
+}
+@keyframes fade-out-left {
+  0% {
+    -webkit-transform: translateX(0);
+    transform: translateX(0);
+    opacity: 1;
+  }
+  100% {
+    -webkit-transform: translateX(-10px);
+    transform: translateX(-10px);
+    opacity: 0;
+  }
+}
+@keyframes reveal-text {
+  from {
+    clip-path: inset(0 20% 65% 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+@keyframes hide-text {
+  from {
+    clip-path: inset(0 0 0 0);
+  }
+  to {
+    clip-path: inset(0 20% 65% 0);
+  }
+}
+@keyframes reveal-color {
+  from {
+    background-color: white;
+  }
+  to {
+    background-color: hsl(0, 0%, 96%);
+  }
+}
+@keyframes hide-color {
+  from {
+    background-color: hsl(0, 0%, 96%);
+  }
+  to {
+    background-color: white;
+  }
 }
 </style>
