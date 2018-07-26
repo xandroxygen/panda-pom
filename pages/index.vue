@@ -4,15 +4,11 @@
     <h1 class="title">PandaPom</h1>
     <div class="level">
       <div class="level-item has-text-centered">
-        <div class="has-small-h-pad">
-          <p class="heading">Completed</p>
-          <p class="title">{{completed}}</p>
-        </div>
-        <div class="has-small-h-pad">
+        <div>
           <p class="heading">Goal Today</p>
           <div class="field">
             <div class="control">
-              <input class="input title has-text-centered" type="text" :value="goal" @input="changeGoal">
+              <input class="input title has-text-centered" type="number" min="1" max="16" :value="goal" @change="changeGoal">
             </div>
           </div>
         </div>
@@ -47,6 +43,7 @@
     <div class="is-flex-centered">
       <h1 class="is-huge is-number">{{parsedTime}}</h1>
     </div> 
+    <progress-tracker class="is-flex-centered" :expected="goal" :actual="completed" :is-active="isPomActive"></progress-tracker>
     <div class="field">
       <label class="label">Preferences</label>
     </div>
@@ -82,6 +79,7 @@ import "bulma/css/bulma.css";
 import * as blockTypes from "../assets/blockTypes.js";
 import * as state from "../assets/state.js";
 import PageTitle from "../components/page-title.vue";
+import ProgressTracker from "../components/progress-tracker.vue";
 
 const POMODORO_TIME = 5; // 25 * 60;
 const LONG_BREAK_TIME = 4; // 10 * 60;
@@ -89,11 +87,12 @@ const SHORT_BREAK_TIME = 3; // 5 * 60;
 
 export default {
   components: {
-    PageTitle
+    PageTitle,
+    ProgressTracker
   },
   data() {
     return {
-      completed: 0,
+      completed: 8,
       goal: 10,
       time: POMODORO_TIME,
       blockType: blockTypes.POMODORO,
@@ -119,6 +118,12 @@ export default {
       return this.state === state.ACTIVE && this.shouldShowTimerInTitle
         ? `(${this.parsedTime}) PandaPom`
         : `PandaPom`;
+    },
+    isPomActive() {
+      return (
+        this.blockType === blockTypes.POMODORO &&
+        (this.state === state.ACTIVE || this.state === state.STOPPED)
+      );
     }
   },
   methods: {
@@ -183,7 +188,8 @@ export default {
             : SHORT_BREAK_TIME;
     },
     changeGoal({ target: { value } }) {
-      this.goal = parseInt(value || "0");
+      const v = parseInt(value || "0");
+      this.goal = v > 0 ? v : 1;
     },
     async notify(body) {
       if (this.shouldNotify) {
@@ -191,11 +197,12 @@ export default {
           body
         });
         return new Promise((resolve, reject) => {
-          setTimeout(() => {
+          const finish = () => {
             notification.close.bind(notification);
             resolve();
-          }, 4000);
-          notification.onclick = () => resolve();
+          };
+          setTimeout(finish, 4000);
+          notification.onclick = finish;
         });
       }
       return Promise.resolve();
