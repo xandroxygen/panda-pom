@@ -8,43 +8,41 @@
     <progress-tracker class="is-flex-centered" :expected="goal" :actual="completed" :is-active="isPomActive"></progress-tracker>
     <div class="level">
       <div class="level-left">
-      <div class="level-item has-text-centered">
-        <div>
-          <p class="heading">Goal Today</p>
-          <div class="field">
-            <div class="control">
-              <input class="input title has-text-centered" type="number" min="1" max="16" :value="goal" @change="changeGoal">
+        <div class="level-item has-text-centered">
+          <div class="has-small-h-pad">
+            <p class="heading">Goal Today</p>
+            <div class="field">
+              <div class="control">
+                <input class="input title has-text-centered" type="number" min="1" max="16" :value="goal" @change="changeGoal">
+              </div>
             </div>
+          </div>
+          <div class="buttons">
+            <span @click="toggleBlock" class="button is-large is-primary"><font-awesome-icon :icon="startStopIcon" size="lg" /></span>
+            <span @click="resetBlock" class="button is-large is-info"><font-awesome-icon icon="redo" size="lg" /></span>
           </div>
         </div>
       </div>
-      <div class="level-item">
-        <div class="buttons">
-          <span @click="toggleBlock" class="button is-large is-primary"><font-awesome-icon :icon="startStopIcon" size="lg" /></span>
-          <span @click="resetBlock" class="button is-large is-info"><font-awesome-icon icon="redo" size="lg" /></span>
-        </div>
-      </div>
-      </div>
       <div class="level-right">
-      <div class="level-item">
-        <div class="buttons has-addons">
-          <span 
-            @click="changeBlockType(POMODORO)" 
-            class="button" 
-            :class="isBlockActive(POMODORO)"
-          >Pomodoro</span>
-          <span 
-            @click="changeBlockType(SHORT_BREAK)" 
-            class="button" 
-            :class="isBlockActive(SHORT_BREAK)"
-          >Short Break</span>
-          <span 
-            @click="changeBlockType(LONG_BREAK)" 
-            class="button"
-            :class="isBlockActive(LONG_BREAK)"
-          >Long Break</span>
+        <div class="level-item">
+          <div class="buttons has-addons">
+            <span 
+              @click="changeBlockType(POMODORO)" 
+              class="button" 
+              :class="isBlockActive(POMODORO)"
+            >Pomodoro</span>
+            <span 
+              @click="changeBlockType(SHORT_BREAK)" 
+              class="button" 
+              :class="isBlockActive(SHORT_BREAK)"
+            >Short Break</span>
+            <span 
+              @click="changeBlockType(LONG_BREAK)" 
+              class="button"
+              :class="isBlockActive(LONG_BREAK)"
+            >Long Break</span>
+          </div>
         </div>
-      </div>
       </div>
     </div>
     <div class="field">
@@ -291,6 +289,7 @@ export default {
   height: inherit;
   padding-top: 0px;
   padding-bottom: 0px;
+  line-height: 1;
 }
 .is-flex-centered {
   display: flex;

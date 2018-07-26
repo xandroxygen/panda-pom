@@ -36,6 +36,8 @@ export default {
 .circle-container {
   display: flex;
   /* flex-direction: column-reverse; */
+  padding-bottom: 1rem;
+  flex-wrap: wrap;
 }
 .circle {
   width: 2rem;
