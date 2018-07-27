@@ -335,28 +335,33 @@ export default {
     }
   },
   async mounted() {
-    this.autostart = this.useStoredValueOrSetDefault("autostart");
-    this.shouldShowTimerInTitle = this.useStoredValueOrSetDefault(
-      "shouldShowTimerInTitle"
-    );
-    this.shouldShowToolbar = this.useStoredValueOrSetDefault(
-      "shouldShowToolbar"
-    );
-    this.showToolbar = this.shouldShowToolbar;
+    try {
+      this.autostart = this.useStoredValueOrSetDefault("autostart");
+      this.shouldShowTimerInTitle = this.useStoredValueOrSetDefault(
+        "shouldShowTimerInTitle"
+      );
+      this.shouldShowToolbar = this.useStoredValueOrSetDefault(
+        "shouldShowToolbar"
+      );
+      this.showToolbar = this.shouldShowToolbar;
 
-    this.shouldNotify = this.useStoredValueOrSetDefault("shouldNotify");
-    if (this.shouldNotify && Notification.permission !== "granted") {
-      const result = await Notification.requestPermission();
-      this.shouldNotify = result === "granted";
+      this.shouldNotify = this.useStoredValueOrSetDefault("shouldNotify");
+      if (this.shouldNotify && Notification.permission !== "granted") {
+        const result = await Notification.requestPermission();
+        this.shouldNotify = result === "granted";
+      }
+
+      if (this.$mq === "mobile") {
+        this.showPreferences = true;
+        this.showToolbar = true;
+      }
+
+      await new Promise(resolve => setTimeout(resolve, 200));
+      this.isLoading = false;
+    } catch (e) {
+      this.shouldNotify = false;
+      this.isLoading = false;
     }
-
-    if (this.$mq === "mobile") {
-      this.showPreferences = true;
-      this.showToolbar = true;
-    }
-
-    await new Promise(resolve => setTimeout(resolve, 200));
-    this.isLoading = false;
   }
 };
 </script>
