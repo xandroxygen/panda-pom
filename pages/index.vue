@@ -120,17 +120,15 @@ import {
   faPause,
   faRedo,
   faPlay,
-  faCog,
-  faInfoCircle,
-  faChevronDown
+  faCog
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 
-library.add(faPause, faRedo, faPlay, faCog, faInfoCircle, faChevronDown);
+library.add(faPause, faRedo, faPlay, faCog);
 
-const POMODORO_TIME = 5; //25 * 60;
-const LONG_BREAK_TIME = 4; // 10 * 60;
-const SHORT_BREAK_TIME = 3; // 5 * 60;
+const POMODORO_TIME = 25 * 60;
+const LONG_BREAK_TIME = 10 * 60;
+const SHORT_BREAK_TIME = 5 * 60;
 
 export default {
   components: {
@@ -141,7 +139,7 @@ export default {
   },
   data() {
     return {
-      completed: 8,
+      completed: 0,
       goal: 10,
       time: POMODORO_TIME,
       blockLength: POMODORO_TIME,
