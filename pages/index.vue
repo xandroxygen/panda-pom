@@ -111,6 +111,14 @@
               </label>
             </div>
           </div>
+          <div class="field">
+            <div class="control">
+              <label class="checkbox">
+                <input type="checkbox" v-model="shouldShowToolbar">
+                Show toolbar on page load?
+              </label>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -158,6 +166,7 @@ export default {
       shouldNotify: true,
       autostart: true,
       shouldShowTimerInTitle: true,
+      shouldShowToolbar: true,
       breakCounter: 0,
       showPreferences: false,
       showPrefTitle: false,
@@ -368,6 +377,9 @@ export default {
     },
     shouldShowTimerInTitle(value) {
       localStorage.setItem("shouldShowTimerInTitle", JSON.stringify(value));
+    },
+    shouldShowToolbar(value) {
+      localStorage.setItem("shouldShowToolbar", JSON.stringify(value));
     }
   },
   async mounted() {
@@ -375,6 +387,8 @@ export default {
     this.shouldShowTimerInTitle = this.useStoredValueOrDefault(
       "shouldShowTimerInTitle"
     );
+    this.shouldShowToolbar = this.useStoredValueOrDefault("shouldShowToolbar");
+    this.showToolbar = this.shouldShowToolbar;
 
     this.shouldNotify = this.useStoredValueOrDefault("shouldNotify");
     if (this.shouldNotify && Notification.permission !== "granted") {
