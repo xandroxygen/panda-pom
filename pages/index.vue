@@ -14,7 +14,7 @@
         <progress class="progress is-small" :class="progressColor" :value="blockProgress" max="100">{{`${blockProgress}%`}}</progress> 
       </div>
       <button v-if="$mq !== 'mobile'" class="button is-medium show-button" @click="toggleToolbar">
-        <font-awesome-icon class="settings icon" icon="info-circle"/>
+        <font-awesome-icon class="settings icon" icon="chevron-down"/>
       </button>
     </div>
     <div class="is-flex-centered">
@@ -138,11 +138,12 @@ import {
   faRedo,
   faPlay,
   faCog,
-  faInfoCircle
+  faInfoCircle,
+  faChevronDown
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 
-library.add(faPause, faRedo, faPlay, faCog, faInfoCircle);
+library.add(faPause, faRedo, faPlay, faCog, faInfoCircle, faChevronDown);
 
 const POMODORO_TIME = 5; //25 * 60;
 const LONG_BREAK_TIME = 4; // 10 * 60;
