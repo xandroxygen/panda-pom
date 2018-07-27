@@ -15,16 +15,9 @@
 
 <script>
 import * as state from "../assets/state.js";
-import { library } from "@fortawesome/fontawesome-svg-core";
-import { faChevronDown } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 
-library.add(faChevronDown);
 export default {
   props: ["time", "state", "blockLength"],
-  components: {
-    FontAwesomeIcon
-  },
   computed: {
     parsedTime() {
       const min = Math.floor(this.time / 60);

@@ -43,5 +43,6 @@ module.exports = {
         }
       }
     ]
-  ]
+  ],
+  plugins: ["~/plugins/font-awesome.js"]
 };

@@ -114,17 +114,6 @@ import PageTitle from "../components/page-title.vue";
 import ProgressTracker from "../components/progress-tracker.vue";
 import Timer from "../components/timer.vue";
 
-import { library } from "@fortawesome/fontawesome-svg-core";
-import {
-  faPause,
-  faRedo,
-  faPlay,
-  faCog
-} from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
-
-library.add(faPause, faRedo, faPlay, faCog);
-
 const POMODORO_TIME = 25 * 60;
 const LONG_BREAK_TIME = 10 * 60;
 const SHORT_BREAK_TIME = 5 * 60;
@@ -133,7 +122,6 @@ export default {
   components: {
     PageTitle,
     ProgressTracker,
-    FontAwesomeIcon,
     Timer
   },
   data() {
