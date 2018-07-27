@@ -108,7 +108,6 @@
 </template>
 
 <script>
-import "bulma/css/bulma.css";
 import * as blockTypes from "../assets/blockTypes.js";
 import * as state from "../assets/state.js";
 import PageTitle from "../components/page-title.vue";
@@ -317,10 +316,14 @@ export default {
         this.blockType = blockTypes.POMODORO;
       }
     },
-    useStoredValueOrDefault(name) {
+    useStoredValueOrSetDefault(name) {
       const value = localStorage.getItem(name);
       const parsed = value && JSON.parse(value);
-      return parsed !== undefined ? parsed : this[name];
+      if (parsed === undefined || parsed === null) {
+        localStorage.setItem(name, JSON.stringify(this[name]));
+        return this[name];
+      }
+      return parsed;
     }
   },
 
@@ -342,14 +345,16 @@ export default {
     }
   },
   async mounted() {
-    this.autostart = this.useStoredValueOrDefault("autostart");
-    this.shouldShowTimerInTitle = this.useStoredValueOrDefault(
+    this.autostart = this.useStoredValueOrSetDefault("autostart");
+    this.shouldShowTimerInTitle = this.useStoredValueOrSetDefault(
       "shouldShowTimerInTitle"
     );
-    this.shouldShowToolbar = this.useStoredValueOrDefault("shouldShowToolbar");
+    this.shouldShowToolbar = this.useStoredValueOrSetDefault(
+      "shouldShowToolbar"
+    );
     this.showToolbar = this.shouldShowToolbar;
 
-    this.shouldNotify = this.useStoredValueOrDefault("shouldNotify");
+    this.shouldNotify = this.useStoredValueOrSetDefault("shouldNotify");
     if (this.shouldNotify && Notification.permission !== "granted") {
       const result = await Notification.requestPermission();
       this.shouldNotify = result === "granted";
