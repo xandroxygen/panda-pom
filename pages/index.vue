@@ -1,7 +1,10 @@
 <template>
   <div class="container">
     <page-title :title="pageTitle"></page-title>
-    <h1 class="title">PandaPom</h1>
+    <div class="is-flex-centered has-text-centered">
+      <img class="logo" src="~/assets/panda.png"/>
+      <h1 class="title page-title">PandaPom</h1>
+    </div>
     <div class="is-flex-centered">
       <h1 class="is-huge is-number">{{parsedTime}}</h1>
     </div> 
@@ -45,8 +48,8 @@
         </div>
       </div>
     </div>
-    <div>
-      <!-- <div class="level" v-if="!showPreferences">
+    <div class="overlay-container">
+      <div class="level overlay">
         <div class="level-left">
           <div class="level-item">
             <div class="button is-medium"  @click="togglePreferences" @mouseover="togglePrefTitle" @mouseout="showPrefTitle = false">
@@ -57,17 +60,17 @@
               <span class="is-size-4">Show Preferences</span>
             </div>
         </div>
-      </div> -->
+      </div>
       <div class="pane" :class="animatePreferences">
         <div class="level">
           <div class="level-left">
             <div class="level-item">
-              <div class="button is-medium"  @click="togglePreferences" @mouseover="togglePrefTitle" @mouseout="showPrefTitle = false">
+              <div class="button is-medium is-spacer">
                 <font-awesome-icon class="settings icon" icon="cog"/>
               </div>
             </div>
-            <div class="level-item" :class="fadePrefTitle">
-              <span class="is-size-4">{{prefTitleText}}</span>
+            <div class="level-item">
+              <span class="is-size-4">Preferences</span>
             </div>
           </div>
         </div>
@@ -169,10 +172,9 @@ export default {
       return this.state === state.ACTIVE ? "pause" : "play";
     },
     fadePrefTitle() {
-      const show = this.showPrefTitle || this.showPreferences;
       return {
-        "fade-in-left": show,
-        "fade-out-left": !show
+        "fade-in-left": this.showPrefTitle,
+        "fade-out-left": !this.showPrefTitle
       };
     },
     prefTitleText() {
@@ -351,18 +353,39 @@ export default {
   padding-bottom: 0px;
   line-height: 1;
 }
+.logo {
+  height: 4rem;
+}
+.page-title {
+  font-size: 3rem;
+  font-weight: 300;
+  padding: 1rem;
+}
 .is-flex-centered {
   display: flex;
   justify-content: center;
+  align-items: center;
 }
 .settings.icon {
   color: #00d1b2;
   pointer-events: none;
 }
 .pane {
-  border-radius: 4px;
+  border-radius: 0.5rem;
   width: 20rem;
   padding: 0.5rem;
+  background-color: hsl(0, 0%, 96%);
+}
+.overlay-container {
+  position: relative;
+}
+.overlay {
+  position: absolute;
+  padding: 0.5rem;
+  z-index: 2;
+}
+.is-spacer {
+  visibility: hidden;
 }
 .fade-in-left {
   -webkit-animation: fade-in-left 0.3s cubic-bezier(0.39, 0.575, 0.565, 1) both;
@@ -460,7 +483,7 @@ export default {
 }
 @keyframes reveal-text {
   from {
-    clip-path: inset(0 20% 65% 0);
+    clip-path: inset(0 100% 100% 0);
   }
   to {
     clip-path: inset(0 0 0 0);
@@ -471,7 +494,7 @@ export default {
     clip-path: inset(0 0 0 0);
   }
   to {
-    clip-path: inset(0 20% 65% 0);
+    clip-path: inset(0 100% 100% 0);
   }
 }
 @keyframes reveal-color {
