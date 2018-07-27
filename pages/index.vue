@@ -1,25 +1,7 @@
 <template>
   <div class="container">
-    <page-title :title="pageTitle"></page-title>
-    <div class="is-flex-centered has-text-centered">
-      <img class="logo" src="~/assets/panda.png"/>
-      <h1 class="title page-title">PandaPom</h1>
-    </div>
-    <div :class="hasNonMobileClass('is-flex-between')" class="is-flex-centered">
-      <button v-if="$mq !== 'mobile'" class="button is-medium is-spacer">
-        <font-awesome-icon class="settings icon" icon="info-circle"/>
-      </button>
-      <div class="has-large-t-pad has-med-v-pad">
-        <h1 class="is-huge is-number" @click="toggleBlock">{{parsedTime}}</h1>
-        <progress class="progress is-small" :class="progressColor" :value="blockProgress" max="100">{{`${blockProgress}%`}}</progress> 
-      </div>
-      <button v-if="$mq !== 'mobile'" class="button is-medium show-button" @click="toggleToolbar">
-        <font-awesome-icon class="settings icon" icon="chevron-down"/>
-      </button>
-    </div>
-    <div class="is-flex-centered">
-      
-    </div>
+    <page-title :time="time"></page-title>
+    <timer :class="hasNonMobileClass('is-flex-between')" :time="time" :state="state" :block-length="blockLength" @toggle-block="toggleBlock" @toggle-toolbar="toggleToolbar" ></timer>
     <progress-tracker class="is-flex-centered" :class="hasMobileClass('has-large-h-pad')" :expected="goal" :actual="completed" :is-active="isPomActive"></progress-tracker>
     <div class="level" :class="animateToolbar">
       <div class="level-left">
@@ -66,7 +48,7 @@
           <div class="level-left">
             <div class="level-item">
               <button class="button is-medium" :class="hasMobileClass('is-static')"  @click="togglePreferences" @mouseover="togglePrefTitle" @mouseout="showPrefTitle = false">
-                <font-awesome-icon class="settings icon" icon="cog"/>
+                <font-awesome-icon class="primary icon" icon="cog"/>
               </button>
             </div>
             <div class="level-item" :class="fadePrefTitle">
@@ -79,7 +61,7 @@
             <div class="level-left">
               <div class="level-item">
                 <button class="button is-medium is-spacer">
-                  <font-awesome-icon class="settings icon" icon="cog"/>
+                  <font-awesome-icon class="primary icon" icon="cog"/>
                 </button>
               </div>
               <div class="level-item">
@@ -131,6 +113,7 @@ import * as blockTypes from "../assets/blockTypes.js";
 import * as state from "../assets/state.js";
 import PageTitle from "../components/page-title.vue";
 import ProgressTracker from "../components/progress-tracker.vue";
+import Timer from "../components/timer.vue";
 
 import { library } from "@fortawesome/fontawesome-svg-core";
 import {
@@ -153,7 +136,8 @@ export default {
   components: {
     PageTitle,
     ProgressTracker,
-    FontAwesomeIcon
+    FontAwesomeIcon,
+    Timer
   },
   data() {
     return {
@@ -178,24 +162,6 @@ export default {
     };
   },
   computed: {
-    parsedTime() {
-      const min = Math.floor(this.time / 60);
-      const sec = this.time % 60;
-      const prettyMin = min < 10 ? `0${min}` : min;
-      const prettySec = sec < 10 ? `0${sec}` : sec;
-      return `${prettyMin}:${prettySec}`;
-    },
-    blockProgress() {
-      if (this.state === state.TRANSITION) {
-        return 100;
-      }
-      return 100 - this.time / this.blockLength * 100;
-    },
-    pageTitle() {
-      return this.state === state.ACTIVE && this.shouldShowTimerInTitle
-        ? `(${this.parsedTime}) PandaPom`
-        : `PandaPom`;
-    },
     isPomActive() {
       return (
         this.blockType === blockTypes.POMODORO &&
@@ -224,12 +190,6 @@ export default {
       return {
         "fade-in": this.showToolbar,
         "fade-out": !this.showToolbar
-      };
-    },
-    progressColor() {
-      return {
-        "is-primary": this.state !== state.TRANSITION,
-        "is-info": this.state === state.TRANSITION
       };
     }
   },
@@ -412,40 +372,12 @@ export default {
 .has-large-h-pad {
   padding: 0 3rem;
 }
-.has-med-v-pad {
-  padding: 1rem 0;
-}
-.has-large-t-pad {
-  padding-top: 4rem;
-}
-.has-m-l-auto {
-  margin-left: auto;
-}
-.is-huge {
-  font-size: 10rem;
-  line-height: 1;
-}
-.is-number {
-  font-family: "Arial", monospace;
-}
-.show-button {
-  align-self: end;
-  margin-bottom: 3.5rem;
-}
 .input.title {
   width: 5.5rem;
   height: inherit;
   padding-top: 0px;
   padding-bottom: 0px;
   line-height: 1;
-}
-.logo {
-  height: 4rem;
-}
-.page-title {
-  font-size: 3rem;
-  font-weight: 300;
-  padding: 1rem;
 }
 .is-flex-centered {
   display: flex;
@@ -457,7 +389,7 @@ export default {
   justify-content: space-between;
   align-items: center;
 }
-.settings.icon {
+.primary.icon {
   color: #00d1b2;
   pointer-events: none;
 }

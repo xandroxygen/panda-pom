@@ -1,0 +1,78 @@
+<template>
+  <div class="is-flex-centered">
+      <button v-if="$mq !== 'mobile'" class="button is-medium is-spacer">
+        <font-awesome-icon class="primary icon" icon="chevron-down"/>
+      </button>
+      <div class="has-large-t-pad has-med-v-pad">
+        <h1 class="is-huge is-number" @click="toggleBlock">{{parsedTime}}</h1>
+        <progress class="progress is-small" :class="progressColor" :value="blockProgress" max="100">{{`${blockProgress}%`}}</progress> 
+      </div>
+      <button v-if="$mq !== 'mobile'" class="button is-medium show-button" @click="toggleToolbar">
+        <font-awesome-icon class="primary icon" icon="chevron-down"/>
+      </button>
+    </div>
+</template>
+
+<script>
+import * as state from "../assets/state.js";
+import { library } from "@fortawesome/fontawesome-svg-core";
+import { faChevronDown } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
+
+library.add(faChevronDown);
+export default {
+  props: ["time", "state", "blockLength"],
+  components: {
+    FontAwesomeIcon
+  },
+  computed: {
+    parsedTime() {
+      const min = Math.floor(this.time / 60);
+      const sec = this.time % 60;
+      const prettyMin = min < 10 ? `0${min}` : min;
+      const prettySec = sec < 10 ? `0${sec}` : sec;
+      return `${prettyMin}:${prettySec}`;
+    },
+    blockProgress() {
+      if (this.state === state.TRANSITION) {
+        return 100;
+      }
+      return 100 - this.time / this.blockLength * 100;
+    },
+    progressColor() {
+      return {
+        "is-primary": this.state !== state.TRANSITION,
+        "is-info": this.state === state.TRANSITION
+      };
+    }
+  },
+  methods: {
+    toggleBlock() {
+      this.$emit("toggle-block");
+    },
+    toggleToolbar() {
+      this.$emit("toggle-toolbar");
+    }
+  }
+};
+</script>
+
+<style>
+.show-button {
+  align-self: end;
+  margin-bottom: 3.5rem;
+}
+.has-med-v-pad {
+  padding: 1rem 0;
+}
+.has-large-t-pad {
+  padding-top: 4rem;
+}
+.is-huge {
+  font-size: 10rem;
+  line-height: 1;
+}
+.is-number {
+  font-family: "Arial", monospace;
+}
+</style>
