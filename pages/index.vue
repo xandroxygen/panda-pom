@@ -6,16 +6,16 @@
       <h1 class="title page-title">PandaPom</h1>
     </div>
     <div :class="hasNonMobileClass('is-flex-between')" class="is-flex-centered">
-      <div v-if="$mq !== 'mobile'" class="button is-medium is-spacer">
+      <button v-if="$mq !== 'mobile'" class="button is-medium is-spacer">
         <font-awesome-icon class="settings icon" icon="info-circle"/>
-      </div>
+      </button>
       <div class="has-large-t-pad has-med-v-pad">
         <h1 class="is-huge is-number" @click="toggleBlock">{{parsedTime}}</h1>
         <progress class="progress is-small" :class="progressColor" :value="blockProgress" max="100">{{`${blockProgress}%`}}</progress> 
       </div>
-      <div v-if="$mq !== 'mobile'" class="button is-medium show-button" @click="toggleToolbar">
+      <button v-if="$mq !== 'mobile'" class="button is-medium show-button" @click="toggleToolbar">
         <font-awesome-icon class="settings icon" icon="info-circle"/>
-      </div>
+      </button>
     </div>
     <div class="is-flex-centered">
       
@@ -33,29 +33,29 @@
             </div>
           </div>
           <div class="buttons">
-            <span @click="toggleBlock" class="button is-large is-primary"><font-awesome-icon :icon="startStopIcon" size="lg" /></span>
-            <span @click="resetBlock" class="button is-large is-info"><font-awesome-icon icon="redo" size="lg" /></span>
+            <button @click="toggleBlock" class="button is-large is-primary"><font-awesome-icon :icon="startStopIcon" size="lg" /></button>
+            <button @click="resetBlock" class="button is-large is-info"><font-awesome-icon icon="redo" size="lg" /></button>
           </div>
         </div>
       </div>
       <div class="level-right">
         <div class="level-item">
           <div class="buttons has-addons">
-            <span 
+            <button 
               @click="changeBlockType(POMODORO)" 
               class="button" 
               :class="isBlockActive(POMODORO)"
-            >Pomodoro</span>
-            <span 
+            >Pomodoro</button>
+            <button 
               @click="changeBlockType(SHORT_BREAK)" 
               class="button" 
               :class="isBlockActive(SHORT_BREAK)"
-            >Short Break</span>
-            <span 
+            >Short Break</button>
+            <button 
               @click="changeBlockType(LONG_BREAK)" 
               class="button"
               :class="isBlockActive(LONG_BREAK)"
-            >Long Break</span>
+            >Long Break</button>
           </div>
         </div>
       </div>
@@ -65,9 +65,9 @@
         <div class="level is-mobile overlay">
           <div class="level-left">
             <div class="level-item">
-              <div class="button is-medium" :class="hasMobileClass('is-static')"  @click="togglePreferences" @mouseover="togglePrefTitle" @mouseout="showPrefTitle = false">
+              <button class="button is-medium" :class="hasMobileClass('is-static')"  @click="togglePreferences" @mouseover="togglePrefTitle" @mouseout="showPrefTitle = false">
                 <font-awesome-icon class="settings icon" icon="cog"/>
-              </div>
+              </button>
             </div>
             <div class="level-item" :class="fadePrefTitle">
                 <span class="is-size-4">Show Preferences</span>
@@ -78,9 +78,9 @@
           <div class="level is-mobile">
             <div class="level-left">
               <div class="level-item">
-                <div class="button is-medium is-spacer">
+                <button class="button is-medium is-spacer">
                   <font-awesome-icon class="settings icon" icon="cog"/>
-                </div>
+                </button>
               </div>
               <div class="level-item">
                 <span class="is-size-4">Preferences</span>
