@@ -7,5 +7,16 @@ module.exports = {
         }
       }
     }
-  }
+  },
+  modules: [
+    [
+      "nuxt-mq",
+      {
+        breakpoints: {
+          mobile: 769,
+          other: Infinity
+        }
+      }
+    ]
+  ]
 };

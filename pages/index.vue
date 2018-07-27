@@ -6,9 +6,12 @@
       <h1 class="title page-title">PandaPom</h1>
     </div>
     <div class="is-flex-centered">
-      <h1 class="is-huge is-number">{{parsedTime}}</h1>
+      <h1 class="is-huge is-number" :class="hasNonMobileClass('has-m-l-auto')">{{parsedTime}}</h1>
+      <div v-if="$mq !== 'mobile'" class="button is-medium has-m-l-auto show-button">
+        <font-awesome-icon class="settings icon" icon="info-circle"/>
+      </div>
     </div> 
-    <progress-tracker class="is-flex-centered" :expected="goal" :actual="completed" :is-active="isPomActive"></progress-tracker>
+    <progress-tracker class="is-flex-centered" :class="hasMobileClass('has-large-h-pad')" :expected="goal" :actual="completed" :is-active="isPomActive"></progress-tracker>
     <div class="level">
       <div class="level-left">
         <div class="level-item has-text-centered">
@@ -48,54 +51,56 @@
         </div>
       </div>
     </div>
-    <div class="overlay-container">
-      <div class="level overlay">
-        <div class="level-left">
-          <div class="level-item">
-            <div class="button is-medium"  @click="togglePreferences" @mouseover="togglePrefTitle" @mouseout="showPrefTitle = false">
-              <font-awesome-icon class="settings icon" icon="cog"/>
-            </div>
-          </div>
-          <div class="level-item" :class="fadePrefTitle">
-              <span class="is-size-4">Show Preferences</span>
-            </div>
-        </div>
-      </div>
-      <div class="pane" :class="animatePreferences">
-        <div class="level">
+    <div :class="hasMobileClass('is-flex-centered')">
+      <div class="overlay-container">
+        <div class="level is-mobile overlay">
           <div class="level-left">
             <div class="level-item">
-              <div class="button is-medium is-spacer">
+              <div class="button is-medium" :class="hasMobileClass('is-static')"  @click="togglePreferences" @mouseover="togglePrefTitle" @mouseout="showPrefTitle = false">
                 <font-awesome-icon class="settings icon" icon="cog"/>
               </div>
             </div>
-            <div class="level-item">
-              <span class="is-size-4">Preferences</span>
+            <div class="level-item" :class="fadePrefTitle">
+                <span class="is-size-4">Show Preferences</span>
+              </div>
+          </div>
+        </div>
+        <div class="pane" :class="animatePreferences">
+          <div class="level is-mobile">
+            <div class="level-left">
+              <div class="level-item">
+                <div class="button is-medium is-spacer">
+                  <font-awesome-icon class="settings icon" icon="cog"/>
+                </div>
+              </div>
+              <div class="level-item">
+                <span class="is-size-4">Preferences</span>
+              </div>
             </div>
           </div>
-        </div>
-        <div class="field">
-          <div class="control">
-            <label class="checkbox">
-              <input type="checkbox" v-model="autostart">
-              Auto-start pomodoros and breaks?
-            </label>
+          <div class="field">
+            <div class="control">
+              <label class="checkbox">
+                <input type="checkbox" v-model="autostart">
+                Auto-start pomodoros and breaks?
+              </label>
+            </div>
           </div>
-        </div>
-        <div class="field">
-          <div class="control">
-            <label class="checkbox">
-              <input type="checkbox" v-model="shouldShowTimerInTitle">
-              Show timer in page title?
-            </label>
+          <div class="field">
+            <div class="control">
+              <label class="checkbox">
+                <input type="checkbox" v-model="shouldShowTimerInTitle">
+                Show timer in page title?
+              </label>
+            </div>
           </div>
-        </div>
-        <div class="field">
-          <div class="control">
-            <label class="checkbox">
-              <input type="checkbox" v-model="shouldNotify">
-              Browser notifications?
-            </label>
+          <div class="field">
+            <div class="control">
+              <label class="checkbox">
+                <input type="checkbox" v-model="shouldNotify">
+                Browser notifications?
+              </label>
+            </div>
           </div>
         </div>
       </div>
@@ -115,11 +120,12 @@ import {
   faPause,
   faRedo,
   faPlay,
-  faCog
+  faCog,
+  faInfoCircle
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 
-library.add(faPause, faRedo, faPlay, faCog);
+library.add(faPause, faRedo, faPlay, faCog, faInfoCircle);
 
 const POMODORO_TIME = 5; // 25 * 60;
 const LONG_BREAK_TIME = 4; // 10 * 60;
@@ -188,6 +194,12 @@ export default {
     }
   },
   methods: {
+    hasMobileClass(c) {
+      return { [c]: this.$mq === "mobile" };
+    },
+    hasNonMobileClass(c) {
+      return { [c]: this.$mq !== "mobile" };
+    },
     togglePreferences() {
       this.showPreferences = !this.showPreferences;
       if (this.showPreferences) {
@@ -332,6 +344,10 @@ export default {
       const result = await Notification.requestPermission();
       this.shouldNotify = result === "granted";
     }
+
+    if (this.$mq === "mobile") {
+      this.showPreferences = true;
+    }
   }
 };
 </script>
@@ -340,11 +356,21 @@ export default {
 .has-small-h-pad {
   padding: 0 0.5rem;
 }
+.has-large-h-pad {
+  padding: 0 3rem;
+}
+.has-m-l-auto {
+  margin-left: auto;
+}
 .is-huge {
   font-size: 10rem;
 }
 .is-number {
   font-family: "Arial", monospace;
+}
+.show-button {
+  align-self: end;
+  margin-bottom: 3.5rem;
 }
 .input.title {
   width: 5.5rem;
