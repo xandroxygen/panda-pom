@@ -5,14 +5,23 @@
       <img class="logo" src="~/assets/panda.png"/>
       <h1 class="title page-title">PandaPom</h1>
     </div>
-    <div class="is-flex-centered">
-      <h1 class="is-huge is-number" :class="hasNonMobileClass('has-m-l-auto')">{{parsedTime}}</h1>
-      <div v-if="$mq !== 'mobile'" class="button is-medium has-m-l-auto show-button">
+    <div :class="hasNonMobileClass('is-flex-between')" class="is-flex-centered">
+      <div v-if="$mq !== 'mobile'" class="button is-medium is-spacer">
         <font-awesome-icon class="settings icon" icon="info-circle"/>
       </div>
-    </div> 
+      <div class="has-large-t-pad has-med-v-pad">
+        <h1 class="is-huge is-number" @click="toggleBlock">{{parsedTime}}</h1>
+        <progress class="progress is-small" :class="progressColor" :value="blockProgress" max="100">{{`${blockProgress}%`}}</progress> 
+      </div>
+      <div v-if="$mq !== 'mobile'" class="button is-medium show-button" @click="toggleToolbar">
+        <font-awesome-icon class="settings icon" icon="info-circle"/>
+      </div>
+    </div>
+    <div class="is-flex-centered">
+      
+    </div>
     <progress-tracker class="is-flex-centered" :class="hasMobileClass('has-large-h-pad')" :expected="goal" :actual="completed" :is-active="isPomActive"></progress-tracker>
-    <div class="level">
+    <div class="level" :class="animateToolbar">
       <div class="level-left">
         <div class="level-item has-text-centered">
           <div class="has-small-h-pad">
@@ -51,7 +60,7 @@
         </div>
       </div>
     </div>
-    <div :class="hasMobileClass('is-flex-centered')">
+    <div :class="[hasMobileClass('is-flex-centered'), animateToolbar]">
       <div class="overlay-container">
         <div class="level is-mobile overlay">
           <div class="level-left">
@@ -127,7 +136,7 @@ import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 
 library.add(faPause, faRedo, faPlay, faCog, faInfoCircle);
 
-const POMODORO_TIME = 5; // 25 * 60;
+const POMODORO_TIME = 5; //25 * 60;
 const LONG_BREAK_TIME = 4; // 10 * 60;
 const SHORT_BREAK_TIME = 3; // 5 * 60;
 
@@ -142,6 +151,7 @@ export default {
       completed: 8,
       goal: 10,
       time: POMODORO_TIME,
+      blockLength: POMODORO_TIME,
       blockType: blockTypes.POMODORO,
       state: state.IDLE,
       interval: false,
@@ -151,6 +161,7 @@ export default {
       breakCounter: 0,
       showPreferences: false,
       showPrefTitle: false,
+      showToolbar: true,
       POMODORO: blockTypes.POMODORO,
       SHORT_BREAK: blockTypes.SHORT_BREAK,
       LONG_BREAK: blockTypes.LONG_BREAK
@@ -160,8 +171,15 @@ export default {
     parsedTime() {
       const min = Math.floor(this.time / 60);
       const sec = this.time % 60;
+      const prettyMin = min < 10 ? `0${min}` : min;
       const prettySec = sec < 10 ? `0${sec}` : sec;
-      return `${min}:${prettySec}`;
+      return `${prettyMin}:${prettySec}`;
+    },
+    blockProgress() {
+      if (this.state === state.TRANSITION) {
+        return 100;
+      }
+      return 100 - this.time / this.blockLength * 100;
     },
     pageTitle() {
       return this.state === state.ACTIVE && this.shouldShowTimerInTitle
@@ -191,6 +209,18 @@ export default {
         "reveal-top-left": this.showPreferences,
         "hide-top-left": !this.showPreferences
       };
+    },
+    animateToolbar() {
+      return {
+        "fade-in": this.showToolbar,
+        "fade-out": !this.showToolbar
+      };
+    },
+    progressColor() {
+      return {
+        "is-primary": this.state !== state.TRANSITION,
+        "is-info": this.state === state.TRANSITION
+      };
     }
   },
   methods: {
@@ -212,6 +242,9 @@ export default {
         this.showPrefTitle = false;
       }
     },
+    toggleToolbar() {
+      this.showToolbar = !this.showToolbar;
+    },
     toggleBlock() {
       if (this.state === state.ACTIVE) {
         this.stopBlock();
@@ -232,10 +265,13 @@ export default {
       }
 
       this.interval = setInterval(() => {
-        this.time -= 1;
-        if (this.time <= 0) {
-          this.stopBlock();
-          this.completeBlock();
+        if (this.state === state.ACTIVE) {
+          this.time -= 1;
+          if (this.time < 0) {
+            this.time = 0;
+            this.stopBlock();
+            this.completeBlock();
+          }
         }
       }, 1000);
       this.state = state.ACTIVE;
@@ -264,8 +300,8 @@ export default {
     },
     stopBlock() {
       if (this.state === state.ACTIVE) {
-        clearInterval(this.interval);
         this.state = state.STOPPED;
+        clearInterval(this.interval);
       } else if (this.state === state.TRANSITION) {
         this.state = state.IDLE;
       }
@@ -278,6 +314,7 @@ export default {
           : this.blockType === blockTypes.LONG_BREAK
             ? LONG_BREAK_TIME
             : SHORT_BREAK_TIME;
+      this.blockLength = this.time;
     },
     changeGoal({ target: { value } }) {
       const v = parseInt(value || "0");
@@ -347,6 +384,7 @@ export default {
 
     if (this.$mq === "mobile") {
       this.showPreferences = true;
+      this.showToolbar = true;
     }
   }
 };
@@ -359,11 +397,18 @@ export default {
 .has-large-h-pad {
   padding: 0 3rem;
 }
+.has-med-v-pad {
+  padding: 1rem 0;
+}
+.has-large-t-pad {
+  padding-top: 4rem;
+}
 .has-m-l-auto {
   margin-left: auto;
 }
 .is-huge {
   font-size: 10rem;
+  line-height: 1;
 }
 .is-number {
   font-family: "Arial", monospace;
@@ -392,6 +437,11 @@ export default {
   justify-content: center;
   align-items: center;
 }
+.is-flex-between {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
 .settings.icon {
   color: #00d1b2;
   pointer-events: none;
@@ -418,6 +468,19 @@ export default {
   animation: fade-in-left 0.3s cubic-bezier(0.39, 0.575, 0.565, 1) both;
   pointer-events: none;
 }
+.fade-out-left {
+  -webkit-animation: fade-out-left 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94)
+    both;
+  animation: fade-out-left 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+}
+.fade-in {
+  -webkit-animation: fade-in 0.3s cubic-bezier(0.39, 0.575, 0.565, 1) both;
+  animation: fade-in 0.3s cubic-bezier(0.39, 0.575, 0.565, 1) both;
+}
+.fade-out {
+  -webkit-animation: fade-out 0.3s cubic-bezier(0.39, 0.575, 0.565, 1) both;
+  animation: fade-out 0.3s cubic-bezier(0.39, 0.575, 0.565, 1) both;
+}
 .reveal-top-left {
   transform-origin: left;
   animation: reveal-text cubic-bezier(0.785, 0.135, 0.15, 0.86) 0.3s forwards;
@@ -434,16 +497,6 @@ export default {
   transform-origin: left;
   animation: hide-color cubic-bezier(0.785, 0.135, 0.15, 0.86) 0.3s forwards;
 }
-/* ----------------------------------------------
- * Generated by Animista on 2018-7-26 14:57:53
- * w: http://animista.net, t: @cssanimista
- * ---------------------------------------------- */
-
-/**
- * ----------------------------------------
- * animation fade-in-left
- * ----------------------------------------
- */
 @-webkit-keyframes fade-in-left {
   0% {
     -webkit-transform: translateX(-10px);
@@ -468,21 +521,6 @@ export default {
     opacity: 1;
   }
 }
-.fade-out-left {
-  -webkit-animation: fade-out-left 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94)
-    both;
-  animation: fade-out-left 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
-}
-/* ----------------------------------------------
- * Generated by Animista on 2018-7-26 15:7:42
- * w: http://animista.net, t: @cssanimista
- * ---------------------------------------------- */
-
-/**
- * ----------------------------------------
- * animation fade-out-left
- * ----------------------------------------
- */
 @-webkit-keyframes fade-out-left {
   0% {
     -webkit-transform: translateX(0);
@@ -504,6 +542,22 @@ export default {
   100% {
     -webkit-transform: translateX(-10px);
     transform: translateX(-10px);
+    opacity: 0;
+  }
+}
+@keyframes fade-in {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+@keyframes fade-out {
+  0% {
+    opacity: 1;
+  }
+  100% {
     opacity: 0;
   }
 }
