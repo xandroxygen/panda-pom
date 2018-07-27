@@ -1,5 +1,6 @@
 <template>
-  <div class="container">
+  <div v-if="isLoading"></div>
+  <div v-else class="container fade-in">
     <page-title :time="time"></page-title>
     <timer :class="hasNonMobileClass('is-flex-between')" :time="time" :state="state" :block-length="blockLength" @toggle-block="toggleBlock" @toggle-toolbar="toggleToolbar" ></timer>
     <progress-tracker class="is-flex-centered" :class="hasMobileClass('has-large-h-pad')" :expected="goal" :actual="completed" :is-active="isPomActive"></progress-tracker>
@@ -141,6 +142,7 @@ export default {
       showPreferences: false,
       showPrefTitle: false,
       showToolbar: true,
+      isLoading: true,
       POMODORO: blockTypes.POMODORO,
       SHORT_BREAK: blockTypes.SHORT_BREAK,
       LONG_BREAK: blockTypes.LONG_BREAK
@@ -352,6 +354,9 @@ export default {
       this.showPreferences = true;
       this.showToolbar = true;
     }
+
+    await new Promise(resolve => setTimeout(resolve, 200));
+    this.isLoading = false;
   }
 };
 </script>
