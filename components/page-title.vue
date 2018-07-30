@@ -1,5 +1,6 @@
 <template>
   <div class="is-flex-centered has-text-centered">
+    <document-title :title="title"></document-title>
     <img class="logo" src="~/assets/panda.png"/>
     <h1 class="title page-title">PandaPom</h1>
   </div>
@@ -7,9 +8,14 @@
 
 <script>
 import * as state from "../assets/state.js";
+import DocumentTitle from "./document-title.vue";
+
 export default {
   name: "page-title",
-  props: ["time"],
+  props: ["time", "state", "shouldShowTimerInTitle"],
+  components: {
+    DocumentTitle
+  },
   computed: {
     parsedTime() {
       const min = Math.floor(this.time / 60);
@@ -22,14 +28,6 @@ export default {
       return this.state === state.ACTIVE && this.shouldShowTimerInTitle
         ? `(${this.parsedTime}) PandaPom`
         : `PandaPom`;
-    }
-  },
-  mounted() {
-    document.title = this.title;
-  },
-  watch: {
-    title() {
-      document.title = this.title;
     }
   }
 };
