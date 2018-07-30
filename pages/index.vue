@@ -47,22 +47,6 @@ export default {
     },
     toggleToolbar() {
       this.showToolbar = !this.showToolbar;
-    },
-    async notify(body) {
-      if (this.shouldNotify) {
-        const notification = new Notification("PandaPom", {
-          body
-        });
-        return new Promise((resolve, reject) => {
-          const finish = () => {
-            notification.close.bind(notification);
-            resolve();
-          };
-          setTimeout(finish, 4000);
-          notification.onclick = finish;
-        });
-      }
-      return Promise.resolve();
     }
   },
   async mounted() {

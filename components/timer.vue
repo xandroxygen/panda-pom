@@ -33,11 +33,11 @@ export default {
     },
     progressColor() {
       return {
-        "is-primary": this.isBlockStateNotTransition,
+        "is-primary": !this.isBlockStateTransition,
         "is-info": this.isBlockStateTransition
       };
     },
-    ...mapGetters(["isBlockStateTransition", "isBlockStateNotTransition"]),
+    ...mapGetters(["isBlockStateTransition"]),
     ...mapState(["time", "blockLength"])
   },
   methods: {

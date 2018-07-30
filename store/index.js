@@ -1,4 +1,4 @@
-const POMODORO_TIME = 25 * 60;
+const POMODORO_TIME = 5; // 25 * 60;
 const LONG_BREAK_TIME = 10 * 60;
 const SHORT_BREAK_TIME = 5 * 60;
 
@@ -39,10 +39,7 @@ export const getters = {
     return state.blockState === blockState.ACTIVE;
   },
   isBlockStateTransition(state) {
-    return state.blockState === state.TRANSITION;
-  },
-  isBlockStateNotTransition(state) {
-    return state.blockState !== blockState.TRANSITION;
+    return state.blockState === blockState.TRANSITION;
   },
   isBlockTypePomodoro(state) {
     return state.blockType === blockTypes.POMODORO;
@@ -129,7 +126,7 @@ export const actions = {
       commit(SET_BLOCK_STATE, blockState.IDLE);
     }
   },
-  completeBlock({ commit, state, dispatch }) {
+  async completeBlock({ commit, state, dispatch }) {
     const newState = state.preferences.autostart
       ? blockState.TRANSITION
       : blockState.IDLE;
@@ -137,13 +134,13 @@ export const actions = {
 
     if (state.blockType === blockTypes.POMODORO) {
       commit(COMPLETE_POMODORO);
-      const message =
+      const body =
         state.completed === state.goal
           ? "You achieved your goal! 🙌🏻 "
           : "Pomodoro completed! 🚀 ";
-      console.log(message); // will be replaced with dispatch to notify
+      await dispatch("notify", { body });
     } else {
-      console.log("Your break is over, back to work!"); // will be replaced with dispatch to notify
+      await dispatch("notify", { body: "Your break is over, back to work!" });
     }
 
     if (
@@ -184,5 +181,21 @@ export const actions = {
   },
   changeToShortBreak({ dispatch }) {
     dispatch("changeBlockType", { type: blockTypes.SHORT_BREAK });
+  },
+  async notify({ state }, { body }) {
+    if (state.preferences.shouldNotify) {
+      const notification = new Notification("PandaPom", {
+        body
+      });
+      return new Promise((resolve, reject) => {
+        const finish = () => {
+          notification.close.bind(notification);
+          resolve();
+        };
+        setTimeout(finish, 4000);
+        notification.onclick = finish;
+      });
+    }
+    return Promise.resolve();
   }
 };
