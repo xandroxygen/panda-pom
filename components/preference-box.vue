@@ -41,7 +41,7 @@
           </label>
         </div>
       </div>
-      <div class="field">
+      <div class="field" v-if="hasNotifications">
         <div class="control">
           <label class="checkbox">
             <input type="checkbox" v-model="shouldNotify">
@@ -116,6 +116,9 @@ export default {
         "reveal-top-left": this.showPreferences,
         "hide-top-left": !this.showPreferences
       };
+    },
+    hasNotifications() {
+      return this.$mq !== "mobile" && !!Notification;
     }
   },
   methods: {
