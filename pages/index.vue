@@ -11,7 +11,7 @@
             <p class="heading">Goal Today</p>
             <div class="field">
               <div class="control">
-                <input class="input title has-text-centered" type="number" min="1" max="16" :value="goal" @change="changeGoal">
+                <input class="input title has-text-centered" type="number" min="1" max="16" pattern="\d*" :value="goal" @change="changeGoal">
               </div>
             </div>
           </div>

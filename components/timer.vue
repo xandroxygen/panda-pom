@@ -4,7 +4,7 @@
         <font-awesome-icon class="primary icon" icon="chevron-down"/>
       </button>
       <div class="has-large-t-pad has-med-v-pad">
-        <h1 class="is-huge is-number" @click="toggleBlock">{{parsedTime}}</h1>
+        <h1 class="is-huge is-number" :class="hasMobileClass('is-less-huge')" @click="toggleBlock">{{parsedTime}}</h1>
         <progress class="progress is-small" :class="progressColor" :value="blockProgress" max="100">{{`${blockProgress}%`}}</progress> 
       </div>
       <button v-if="$mq !== 'mobile'" class="button is-medium show-button" @click="toggleToolbar">
@@ -45,6 +45,9 @@ export default {
     },
     toggleToolbar() {
       this.$emit("toggle-toolbar");
+    },
+    hasMobileClass(c) {
+      return { [c]: this.$mq === "mobile" };
     }
   }
 };
@@ -64,6 +67,9 @@ export default {
 .is-huge {
   font-size: 10rem;
   line-height: 1;
+}
+.is-less-huge {
+  font-size: 8rem;
 }
 .is-number {
   font-family: "Arial", monospace;
