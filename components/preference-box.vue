@@ -62,7 +62,9 @@
 </template>
 
 <script>
+import mobileMixin from "../assets/mobileMixin";
 export default {
+  mixins: [mobileMixin],
   data() {
     return {
       showPrefTitle: false,

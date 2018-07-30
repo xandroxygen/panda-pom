@@ -15,8 +15,10 @@
 
 <script>
 import { mapState, mapGetters, mapActions } from "vuex";
+import mobileMixin from "../assets/mobileMixin";
 
 export default {
+  mixins: [mobileMixin],
   computed: {
     parsedTime() {
       const min = Math.floor(this.time / 60);

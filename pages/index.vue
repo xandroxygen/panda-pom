@@ -15,8 +15,10 @@ import ProgressTracker from "../components/progress-tracker.vue";
 import Timer from "../components/timer.vue";
 import Toolbar from "../components/toolbar.vue";
 import PreferenceBox from "../components/preference-box.vue";
+import mobileMixin from "../assets/mobileMixin";
 
 export default {
+  mixins: [mobileMixin],
   components: {
     PageTitle,
     ProgressTracker,
@@ -39,12 +41,6 @@ export default {
     }
   },
   methods: {
-    hasMobileClass(c) {
-      return { [c]: this.$mq === "mobile" };
-    },
-    hasNonMobileClass(c) {
-      return { [c]: this.$mq !== "mobile" };
-    },
     toggleToolbar() {
       this.showToolbar = !this.showToolbar;
     }
