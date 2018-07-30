@@ -7,12 +7,12 @@
 </template>
 
 <script>
-import * as state from "../assets/state.js";
+import { mapState, mapGetters } from "vuex";
 import DocumentTitle from "./document-title.vue";
 
 export default {
   name: "page-title",
-  props: ["time", "state", "shouldShowTimerInTitle"],
+  props: ["shouldShowTimerInTitle"],
   components: {
     DocumentTitle
   },
@@ -25,10 +25,12 @@ export default {
       return `${prettyMin}:${prettySec}`;
     },
     title() {
-      return this.state === state.ACTIVE && this.shouldShowTimerInTitle
+      return this.isBlockStateActive && this.shouldShowTimerInTitle
         ? `(${this.parsedTime}) PandaPom`
         : `PandaPom`;
-    }
+    },
+    ...mapGetters(["isBlockStateActive"]),
+    ...mapState(["time"])
   }
 };
 </script>

@@ -39,6 +39,12 @@ export const getters = {
   isBlockStateActive(state) {
     return state.blockState === blockState.ACTIVE;
   },
+  isBlockStateTransition(state) {
+    return state.blockState === state.TRANSITION;
+  },
+  isBlockStateNotTransition(state) {
+    return state.blockState !== blockState.TRANSITION;
+  },
   isBlockTypePomodoro(state) {
     return state.blockType === blockTypes.POMODORO;
   },
@@ -148,7 +154,6 @@ export const actions = {
     }
   },
   toggleBlock({ state, dispatch }) {
-    console.log("toggling block");
     if (state.blockState === blockState.ACTIVE) {
       dispatch("stopBlock");
     } else {

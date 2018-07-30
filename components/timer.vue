@@ -14,10 +14,9 @@
 </template>
 
 <script>
-import * as state from "../assets/state.js";
+import { mapState, mapGetters } from "vuex";
 
 export default {
-  props: ["time", "state", "blockLength"],
   computed: {
     parsedTime() {
       const min = Math.floor(this.time / 60);
@@ -27,17 +26,19 @@ export default {
       return `${prettyMin}:${prettySec}`;
     },
     blockProgress() {
-      if (this.state === state.TRANSITION) {
+      if (this.isBlockStateTransition) {
         return 100;
       }
       return 100 - this.time / this.blockLength * 100;
     },
     progressColor() {
       return {
-        "is-primary": this.state !== state.TRANSITION,
-        "is-info": this.state === state.TRANSITION
+        "is-primary": this.isBlockStateNotTransition,
+        "is-info": this.isBlockStateTransition
       };
-    }
+    },
+    ...mapGetters(["isBlockStateTransition", "isBlockStateNotTransition"]),
+    ...mapState(["time", "blockLength"])
   },
   methods: {
     toggleBlock() {

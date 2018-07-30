@@ -1,8 +1,8 @@
 <template>
   <div v-if="isLoading"></div>
   <div v-else class="container fade-in">
-    <page-title :time="time" :state="blockState" :should-show-timer-in-title="shouldShowTimerInTitle"></page-title>
-    <timer :class="hasNonMobileClass('is-flex-between')" :time="time" :state="blockState" :block-length="blockLength" @toggle-block="toggleBlock" @toggle-toolbar="toggleToolbar" ></timer>
+    <page-title :should-show-timer-in-title="shouldShowTimerInTitle"></page-title>
+    <timer :class="hasNonMobileClass('is-flex-between')" @toggle-block="toggleBlock" @toggle-toolbar="toggleToolbar" ></timer>
     <progress-tracker class="is-flex-centered" :class="hasMobileClass('has-large-h-pad')" :expected="goal" :actual="completed" :is-active="isPomActive"></progress-tracker>
     <div class="level" :class="animateToolbar">
       <div class="level-left">
