@@ -86,10 +86,6 @@ export default {
   },
   data() {
     return {
-      shouldNotify: true,
-      autostart: true,
-      shouldShowTimerInTitle: true,
-      shouldShowToolbar: true,
       showPreferences: false,
       showPrefTitle: false,
       showToolbar: true,
@@ -119,7 +115,39 @@ export default {
       };
     },
     ...mapState(["completed", "goal"]),
-    ...mapGetters(["isPomActive"])
+    ...mapGetters(["isPomActive"]),
+    autostart: {
+      get() {
+        return this.$store.state.preferences.autostart;
+      },
+      set(value) {
+        this.$store.dispatch("preferences/setAutostart", { value });
+      }
+    },
+    shouldNotify: {
+      get() {
+        return this.$store.state.preferences.shouldNotify;
+      },
+      set(value) {
+        this.$store.dispatch("preferences/setShouldNotify", { value });
+      }
+    },
+    shouldShowTimerInTitle: {
+      get() {
+        return this.$store.state.preferences.shouldShowTimerInTitle;
+      },
+      set(value) {
+        this.$store.dispatch("preferences/setShouldShowTimer", { value });
+      }
+    },
+    shouldShowToolbar: {
+      get() {
+        return this.$store.state.preferences.shouldShowToolbar;
+      },
+      set(value) {
+        this.$store.dispatch("preferences/setShouldShowToolbar", { value });
+      }
+    }
   },
   methods: {
     hasMobileClass(c) {
@@ -158,63 +186,19 @@ export default {
         });
       }
       return Promise.resolve();
-    },
-    useStoredValueOrSetDefault(name) {
-      const value = localStorage.getItem(name);
-      const parsed = value && JSON.parse(value);
-      if (parsed === undefined || parsed === null) {
-        localStorage.setItem(name, JSON.stringify(this[name]));
-        return this[name];
-      }
-      return parsed;
-    }
-  },
-
-  watch: {
-    autostart(value) {
-      localStorage.setItem("autostart", JSON.stringify(value));
-    },
-    shouldNotify(value) {
-      localStorage.setItem("shouldNotify", JSON.stringify(value));
-      if (value && Notification.permission !== "granted") {
-        Notification.requestPermission();
-      }
-    },
-    shouldShowTimerInTitle(value) {
-      localStorage.setItem("shouldShowTimerInTitle", JSON.stringify(value));
-    },
-    shouldShowToolbar(value) {
-      localStorage.setItem("shouldShowToolbar", JSON.stringify(value));
     }
   },
   async mounted() {
-    try {
-      this.autostart = this.useStoredValueOrSetDefault("autostart");
-      this.shouldShowTimerInTitle = this.useStoredValueOrSetDefault(
-        "shouldShowTimerInTitle"
-      );
-      this.shouldShowToolbar = this.useStoredValueOrSetDefault(
-        "shouldShowToolbar"
-      );
-      this.showToolbar = this.shouldShowToolbar;
+    await this.$store.dispatch("preferences/initialize");
+    this.showToolbar = this.shouldShowToolbar;
 
-      this.shouldNotify = this.useStoredValueOrSetDefault("shouldNotify");
-      if (this.shouldNotify && Notification.permission !== "granted") {
-        const result = await Notification.requestPermission();
-        this.shouldNotify = result === "granted";
-      }
-
-      if (this.$mq === "mobile") {
-        this.showPreferences = true;
-        this.showToolbar = true;
-      }
-
-      await new Promise(resolve => setTimeout(resolve, 200));
-      this.isLoading = false;
-    } catch (e) {
-      this.shouldNotify = false;
-      this.isLoading = false;
+    if (this.$mq === "mobile") {
+      this.showPreferences = true;
+      this.showToolbar = true;
     }
+
+    await new Promise(resolve => setTimeout(resolve, 200));
+    this.isLoading = false;
   }
 };
 </script>

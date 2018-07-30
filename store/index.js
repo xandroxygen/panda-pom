@@ -24,8 +24,7 @@ export const state = () => ({
   blockType: blockTypes.POMODORO,
   blockState: blockState.IDLE,
   interval: false,
-  breakCounter: 0,
-  autostart: false //this will eventually go in preferences
+  breakCounter: 0
 });
 
 export const getters = {
@@ -131,7 +130,9 @@ export const actions = {
     }
   },
   completeBlock({ commit, state, dispatch }) {
-    const newState = state.autostart ? blockState.TRANSITION : blockState.IDLE;
+    const newState = state.preferences.autostart
+      ? blockState.TRANSITION
+      : blockState.IDLE;
     commit(SET_BLOCK_STATE, newState);
 
     if (state.blockType === blockTypes.POMODORO) {
@@ -145,7 +146,10 @@ export const actions = {
       console.log("Your break is over, back to work!"); // will be replaced with dispatch to notify
     }
 
-    if (state.autostart && state.blockState === blockState.TRANSITION) {
+    if (
+      state.preferences.autostart &&
+      state.blockState === blockState.TRANSITION
+    ) {
       commit(ADVANCE_BLOCK_TYPE);
       commit(RESET_BLOCK);
       dispatch("startBlock");
