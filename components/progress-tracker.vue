@@ -1,5 +1,5 @@
 <template>
-  <div class="circle-container">
+  <div class="circle-container is-flex-centered">
     <span class="circle" v-for="n in fullCircles" :key="n + 'full'"></span>
     <span class="circle" v-if="shouldShowHalfCircle">
       <span class="is-full-half"></span>
@@ -11,23 +11,26 @@
 </template>
 
 <script>
+import { mapState, mapGetters } from "vuex";
+
 export default {
-  props: ["expected", "actual", "isActive"],
   computed: {
     fullCircles() {
-      return Math.min(this.actual, this.expected);
+      return Math.min(this.completed, this.goal);
     },
     shouldShowHalfCircle() {
-      return this.isActive && this.actual < this.expected;
+      return this.isPomActive && this.completed < this.goal;
     },
     emptyCircles() {
-      const leftover = this.expected - this.actual;
+      const leftover = this.goal - this.completed;
       const yeah = this.shouldShowHalfCircle ? leftover - 1 : leftover;
       return Math.max(yeah, 0);
     },
     extras() {
-      return Math.max(this.actual - this.expected, 0);
-    }
+      return Math.max(this.completed - this.goal, 0);
+    },
+    ...mapState(["goal", "completed"]),
+    ...mapGetters(["isPomActive"])
   }
 };
 </script>

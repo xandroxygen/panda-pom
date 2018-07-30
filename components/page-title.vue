@@ -11,8 +11,6 @@ import { mapState, mapGetters } from "vuex";
 import DocumentTitle from "./document-title.vue";
 
 export default {
-  name: "page-title",
-  props: ["shouldShowTimerInTitle"],
   components: {
     DocumentTitle
   },
@@ -28,6 +26,9 @@ export default {
       return this.isBlockStateActive && this.shouldShowTimerInTitle
         ? `(${this.parsedTime}) PandaPom`
         : `PandaPom`;
+    },
+    shouldShowTimerInTitle() {
+      return this.$store.state.preferences.shouldShowTimerInTitle;
     },
     ...mapGetters(["isBlockStateActive"]),
     ...mapState(["time"])

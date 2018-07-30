@@ -1,72 +1,11 @@
 <template>
   <div v-if="isLoading"></div>
   <div v-else class="container fade-in">
-    <page-title :should-show-timer-in-title="shouldShowTimerInTitle"></page-title>
+    <page-title></page-title>
     <timer :class="hasNonMobileClass('is-flex-between')" @toggle-toolbar="toggleToolbar" ></timer>
-    <progress-tracker class="is-flex-centered" :class="hasMobileClass('has-large-h-pad')" :expected="goal" :actual="completed" :is-active="isPomActive"></progress-tracker>
+    <progress-tracker :class="hasMobileClass('has-large-h-pad')"></progress-tracker>
     <toolbar :class="animateToolbar"></toolbar>
-    <div :class="[hasMobileClass('is-flex-centered'), animateToolbar]">
-      <div class="overlay-container">
-        <div class="level is-mobile overlay">
-          <div class="level-left">
-            <div class="level-item">
-              <button class="button is-medium" :class="hasMobileClass('is-static')"  @click="togglePreferences" @mouseover="togglePrefTitle" @mouseout="showPrefTitle = false">
-                <font-awesome-icon class="primary icon" icon="cog"/>
-              </button>
-            </div>
-            <div class="level-item" :class="fadePrefTitle">
-                <span class="is-size-4">Show Preferences</span>
-              </div>
-          </div>
-        </div>
-        <div class="pane" :class="animatePreferences">
-          <div class="level is-mobile">
-            <div class="level-left">
-              <div class="level-item">
-                <button class="button is-medium is-spacer">
-                  <font-awesome-icon class="primary icon" icon="cog"/>
-                </button>
-              </div>
-              <div class="level-item">
-                <span class="is-size-4">Preferences</span>
-              </div>
-            </div>
-          </div>
-          <div class="field">
-            <div class="control">
-              <label class="checkbox">
-                <input type="checkbox" v-model="autostart">
-                Auto-start pomodoros and breaks?
-              </label>
-            </div>
-          </div>
-          <div class="field">
-            <div class="control">
-              <label class="checkbox">
-                <input type="checkbox" v-model="shouldShowTimerInTitle">
-                Show timer in page title?
-              </label>
-            </div>
-          </div>
-          <div class="field">
-            <div class="control">
-              <label class="checkbox">
-                <input type="checkbox" v-model="shouldNotify">
-                Browser notifications?
-              </label>
-            </div>
-          </div>
-          <div class="field">
-            <div class="control">
-              <label class="checkbox">
-                <input type="checkbox" v-model="shouldShowToolbar">
-                Show toolbar on page load?
-              </label>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+    <preference-box :class="[hasMobileClass('is-flex-centered'), animateToolbar]"></preference-box>
   </div>
 </template>
 
@@ -75,78 +14,28 @@ import PageTitle from "../components/page-title.vue";
 import ProgressTracker from "../components/progress-tracker.vue";
 import Timer from "../components/timer.vue";
 import Toolbar from "../components/toolbar.vue";
-import { mapState, mapGetters } from "vuex";
+import PreferenceBox from "../components/preference-box.vue";
 
 export default {
   components: {
     PageTitle,
     ProgressTracker,
     Timer,
-    Toolbar
+    Toolbar,
+    PreferenceBox
   },
   data() {
     return {
-      showPreferences: false,
-      showPrefTitle: false,
       showToolbar: true,
       isLoading: true
     };
   },
   computed: {
-    fadePrefTitle() {
-      return {
-        "fade-in-left": this.showPrefTitle,
-        "fade-out-left": !this.showPrefTitle
-      };
-    },
-    prefTitleText() {
-      return this.showPreferences ? "Preferences" : "Show Preferences";
-    },
-    animatePreferences() {
-      return {
-        "reveal-top-left": this.showPreferences,
-        "hide-top-left": !this.showPreferences
-      };
-    },
     animateToolbar() {
       return {
         "fade-in": this.showToolbar,
         "fade-out": !this.showToolbar
       };
-    },
-    ...mapState(["completed", "goal"]),
-    ...mapGetters(["isPomActive"]),
-    autostart: {
-      get() {
-        return this.$store.state.preferences.autostart;
-      },
-      set(value) {
-        this.$store.dispatch("preferences/setAutostart", { value });
-      }
-    },
-    shouldNotify: {
-      get() {
-        return this.$store.state.preferences.shouldNotify;
-      },
-      set(value) {
-        this.$store.dispatch("preferences/setShouldNotify", { value });
-      }
-    },
-    shouldShowTimerInTitle: {
-      get() {
-        return this.$store.state.preferences.shouldShowTimerInTitle;
-      },
-      set(value) {
-        this.$store.dispatch("preferences/setShouldShowTimer", { value });
-      }
-    },
-    shouldShowToolbar: {
-      get() {
-        return this.$store.state.preferences.shouldShowToolbar;
-      },
-      set(value) {
-        this.$store.dispatch("preferences/setShouldShowToolbar", { value });
-      }
     }
   },
   methods: {
@@ -155,18 +44,6 @@ export default {
     },
     hasNonMobileClass(c) {
       return { [c]: this.$mq !== "mobile" };
-    },
-    togglePreferences() {
-      this.showPreferences = !this.showPreferences;
-      if (this.showPreferences) {
-        this.showPrefTitle = false;
-      }
-    },
-    togglePrefTitle() {
-      this.showPrefTitle = true;
-      if (this.showPreferences) {
-        this.showPrefTitle = false;
-      }
     },
     toggleToolbar() {
       this.showToolbar = !this.showToolbar;
@@ -190,10 +67,9 @@ export default {
   },
   async mounted() {
     await this.$store.dispatch("preferences/initialize");
-    this.showToolbar = this.shouldShowToolbar;
+    this.showToolbar = this.$store.state.preferences.shouldShowToolbar;
 
     if (this.$mq === "mobile") {
-      this.showPreferences = true;
       this.showToolbar = true;
     }
 
