@@ -14,7 +14,7 @@
 </template>
 
 <script>
-import { mapState, mapGetters } from "vuex";
+import { mapState, mapGetters, mapActions } from "vuex";
 
 export default {
   computed: {
@@ -41,9 +41,7 @@ export default {
     ...mapState(["time", "blockLength"])
   },
   methods: {
-    toggleBlock() {
-      this.$emit("toggle-block");
-    },
+    ...mapActions(["toggleBlock"]),
     toggleToolbar() {
       this.$emit("toggle-toolbar");
     },

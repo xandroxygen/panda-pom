@@ -2,47 +2,9 @@
   <div v-if="isLoading"></div>
   <div v-else class="container fade-in">
     <page-title :should-show-timer-in-title="shouldShowTimerInTitle"></page-title>
-    <timer :class="hasNonMobileClass('is-flex-between')" @toggle-block="toggleBlock" @toggle-toolbar="toggleToolbar" ></timer>
+    <timer :class="hasNonMobileClass('is-flex-between')" @toggle-toolbar="toggleToolbar" ></timer>
     <progress-tracker class="is-flex-centered" :class="hasMobileClass('has-large-h-pad')" :expected="goal" :actual="completed" :is-active="isPomActive"></progress-tracker>
-    <div class="level" :class="animateToolbar">
-      <div class="level-left">
-        <div class="level-item has-text-centered">
-          <div class="has-small-h-pad">
-            <p class="heading">Goal Today</p>
-            <div class="field">
-              <div class="control">
-                <input class="input title has-text-centered" type="number" min="1" max="16" pattern="\d*" :value="goal" @change="changeGoal">
-              </div>
-            </div>
-          </div>
-          <div class="buttons">
-            <button @click="toggleBlock" class="button is-large is-primary"><font-awesome-icon :icon="startStopIcon" size="lg" /></button>
-            <button @click="resetBlock" class="button is-large is-info"><font-awesome-icon icon="redo" size="lg" /></button>
-          </div>
-        </div>
-      </div>
-      <div class="level-right">
-        <div class="level-item">
-          <div class="buttons has-addons">
-            <button 
-              @click="changeToPomodoro" 
-              class="button" 
-              :class="isBlockActive(isBlockTypePomodoro)"
-            >Pomodoro</button>
-            <button 
-              @click="changeToShortBreak" 
-              class="button" 
-              :class="isBlockActive(isBlockTypeShortBreak)"
-            >Short Break</button>
-            <button 
-              @click="changeToLongBreak" 
-              class="button"
-              :class="isBlockActive(isBlockTypeLongBreak)"
-            >Long Break</button>
-          </div>
-        </div>
-      </div>
-    </div>
+    <toolbar :class="animateToolbar"></toolbar>
     <div :class="[hasMobileClass('is-flex-centered'), animateToolbar]">
       <div class="overlay-container">
         <div class="level is-mobile overlay">
@@ -112,13 +74,15 @@
 import PageTitle from "../components/page-title.vue";
 import ProgressTracker from "../components/progress-tracker.vue";
 import Timer from "../components/timer.vue";
-import { mapState, mapGetters, mapMutations, mapActions } from "vuex";
+import Toolbar from "../components/toolbar.vue";
+import { mapState, mapGetters } from "vuex";
 
 export default {
   components: {
     PageTitle,
     ProgressTracker,
-    Timer
+    Timer,
+    Toolbar
   },
   data() {
     return {
@@ -133,9 +97,6 @@ export default {
     };
   },
   computed: {
-    startStopIcon() {
-      return this.isBlockStateActive ? "pause" : "play";
-    },
     fadePrefTitle() {
       return {
         "fade-in-left": this.showPrefTitle,
@@ -157,21 +118,8 @@ export default {
         "fade-out": !this.showToolbar
       };
     },
-    ...mapState([
-      "blockState",
-      "blockType",
-      "completed",
-      "goal",
-      "time",
-      "blockLength"
-    ]),
-    ...mapGetters([
-      "isPomActive",
-      "isBlockStateActive",
-      "isBlockTypePomodoro",
-      "isBlockTypeLongBreak",
-      "isBlockTypeShortBreak"
-    ])
+    ...mapState(["completed", "goal"]),
+    ...mapGetters(["isPomActive"])
   },
   methods: {
     hasMobileClass(c) {
@@ -194,13 +142,6 @@ export default {
     },
     toggleToolbar() {
       this.showToolbar = !this.showToolbar;
-    },
-    isBlockActive(condition) {
-      return { "is-primary is-selected is-outlined": condition };
-    },
-    changeGoal({ target: { value } }) {
-      const v = parseInt(value || "0");
-      this.setGoal(v > 0 ? v : 1);
     },
     async notify(body) {
       if (this.shouldNotify) {
@@ -226,20 +167,7 @@ export default {
         return this[name];
       }
       return parsed;
-    },
-    ...mapMutations({
-      resetBlock: "RESET_BLOCK",
-      setGoal: "SET_GOAL"
-    }),
-    ...mapActions([
-      "startBlock",
-      "stopBlock",
-      "completeBlock",
-      "toggleBlock",
-      "changeToPomodoro",
-      "changeToLongBreak",
-      "changeToShortBreak"
-    ])
+    }
   },
 
   watch: {

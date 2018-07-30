@@ -160,6 +160,13 @@ export const actions = {
       dispatch("startBlock");
     }
   },
+  resetBlock({ state, commit, dispatch }) {
+    dispatch("stopBlock");
+    commit(RESET_BLOCK);
+  },
+  setGoal({ commit }, { goal }) {
+    commit(SET_GOAL, goal);
+  },
   changeBlockType({ commit, dispatch }, { type }) {
     commit(SET_BLOCK_TYPE, type);
     dispatch("stopBlock");
