@@ -1,8 +1,8 @@
 <template>
   <div v-if="isLoading"></div>
   <div v-else class="container fade-in">
-    <page-title :time="time" :state="state" :should-show-timer-in-title="shouldShowTimerInTitle"></page-title>
-    <timer :class="hasNonMobileClass('is-flex-between')" :time="time" :state="state" :block-length="blockLength" @toggle-block="toggleBlock" @toggle-toolbar="toggleToolbar" ></timer>
+    <page-title :time="time" :state="blockState" :should-show-timer-in-title="shouldShowTimerInTitle"></page-title>
+    <timer :class="hasNonMobileClass('is-flex-between')" :time="time" :state="blockState" :block-length="blockLength" @toggle-block="toggleBlock" @toggle-toolbar="toggleToolbar" ></timer>
     <progress-tracker class="is-flex-centered" :class="hasMobileClass('has-large-h-pad')" :expected="goal" :actual="completed" :is-active="isPomActive"></progress-tracker>
     <div class="level" :class="animateToolbar">
       <div class="level-left">
@@ -25,19 +25,19 @@
         <div class="level-item">
           <div class="buttons has-addons">
             <button 
-              @click="changeBlockType(POMODORO)" 
+              @click="changeToPomodoro" 
               class="button" 
-              :class="isBlockActive(POMODORO)"
+              :class="isBlockActive(isBlockTypePomodoro)"
             >Pomodoro</button>
             <button 
-              @click="changeBlockType(SHORT_BREAK)" 
+              @click="changeToShortBreak" 
               class="button" 
-              :class="isBlockActive(SHORT_BREAK)"
+              :class="isBlockActive(isBlockTypeShortBreak)"
             >Short Break</button>
             <button 
-              @click="changeBlockType(LONG_BREAK)" 
+              @click="changeToLongBreak" 
               class="button"
-              :class="isBlockActive(LONG_BREAK)"
+              :class="isBlockActive(isBlockTypeLongBreak)"
             >Long Break</button>
           </div>
         </div>
@@ -109,15 +109,10 @@
 </template>
 
 <script>
-import * as blockTypes from "../assets/blockTypes.js";
-import * as state from "../assets/state.js";
 import PageTitle from "../components/page-title.vue";
 import ProgressTracker from "../components/progress-tracker.vue";
 import Timer from "../components/timer.vue";
-
-const POMODORO_TIME = 25 * 60;
-const LONG_BREAK_TIME = 10 * 60;
-const SHORT_BREAK_TIME = 5 * 60;
+import { mapState, mapGetters, mapMutations, mapActions } from "vuex";
 
 export default {
   components: {
@@ -127,36 +122,19 @@ export default {
   },
   data() {
     return {
-      completed: 0,
-      goal: 10,
-      time: POMODORO_TIME,
-      blockLength: POMODORO_TIME,
-      blockType: blockTypes.POMODORO,
-      state: state.IDLE,
-      interval: false,
       shouldNotify: true,
       autostart: true,
       shouldShowTimerInTitle: true,
       shouldShowToolbar: true,
-      breakCounter: 0,
       showPreferences: false,
       showPrefTitle: false,
       showToolbar: true,
-      isLoading: true,
-      POMODORO: blockTypes.POMODORO,
-      SHORT_BREAK: blockTypes.SHORT_BREAK,
-      LONG_BREAK: blockTypes.LONG_BREAK
+      isLoading: true
     };
   },
   computed: {
-    isPomActive() {
-      return (
-        this.blockType === blockTypes.POMODORO &&
-        (this.state === state.ACTIVE || this.state === state.STOPPED)
-      );
-    },
     startStopIcon() {
-      return this.state === state.ACTIVE ? "pause" : "play";
+      return this.isBlockStateActive ? "pause" : "play";
     },
     fadePrefTitle() {
       return {
@@ -178,7 +156,22 @@ export default {
         "fade-in": this.showToolbar,
         "fade-out": !this.showToolbar
       };
-    }
+    },
+    ...mapState([
+      "blockState",
+      "blockType",
+      "completed",
+      "goal",
+      "time",
+      "blockLength"
+    ]),
+    ...mapGetters([
+      "isPomActive",
+      "isBlockStateActive",
+      "isBlockTypePomodoro",
+      "isBlockTypeLongBreak",
+      "isBlockTypeShortBreak"
+    ])
   },
   methods: {
     hasMobileClass(c) {
@@ -202,81 +195,12 @@ export default {
     toggleToolbar() {
       this.showToolbar = !this.showToolbar;
     },
-    toggleBlock() {
-      if (this.state === state.ACTIVE) {
-        this.stopBlock();
-      } else {
-        this.startBlock();
-      }
-    },
-    changeBlockType(type) {
-      this.blockType = type;
-      this.stopBlock();
-      this.resetBlock();
-    },
-    isBlockActive(type) {
-      return { "is-primary is-selected is-outlined": this.blockType === type };
-    },
-    startBlock() {
-      if (this.state === state.ACTIVE) {
-        return;
-      }
-
-      this.interval = setInterval(() => {
-        if (this.state === state.ACTIVE) {
-          this.time -= 1;
-          if (this.time < 0) {
-            this.time = 0;
-            this.stopBlock();
-            this.completeBlock();
-          }
-        }
-      }, 1000);
-      this.state = state.ACTIVE;
-    },
-    async completeBlock() {
-      this.state = this.autostart ? state.TRANSITION : state.IDLE;
-
-      if (this.blockType === blockTypes.POMODORO) {
-        this.completed += 1;
-        const message =
-          this.completed === this.goal
-            ? "You achieved your goal! 🙌🏻 "
-            : "Pomodoro completed! 🚀 ";
-        await this.notify(message);
-      } else {
-        await this.notify("Your break is over, back to work!");
-      }
-
-      if (this.autostart && this.state === state.TRANSITION) {
-        this.nextBlockType();
-        this.resetBlock();
-        this.startBlock();
-      } else if (this.state !== state.TRANSITION) {
-        this.resetBlock();
-      }
-    },
-    stopBlock() {
-      if (this.state === state.ACTIVE) {
-        this.state = state.STOPPED;
-        clearInterval(this.interval);
-      } else if (this.state === state.TRANSITION) {
-        this.state = state.IDLE;
-      }
-    },
-    resetBlock() {
-      this.state = state.IDLE;
-      this.time =
-        this.blockType === blockTypes.POMODORO
-          ? POMODORO_TIME
-          : this.blockType === blockTypes.LONG_BREAK
-            ? LONG_BREAK_TIME
-            : SHORT_BREAK_TIME;
-      this.blockLength = this.time;
+    isBlockActive(condition) {
+      return { "is-primary is-selected is-outlined": condition };
     },
     changeGoal({ target: { value } }) {
       const v = parseInt(value || "0");
-      this.goal = v > 0 ? v : 1;
+      this.setGoal(v > 0 ? v : 1);
     },
     async notify(body) {
       if (this.shouldNotify) {
@@ -294,19 +218,6 @@ export default {
       }
       return Promise.resolve();
     },
-    nextBlockType() {
-      if (this.blockType === blockTypes.POMODORO) {
-        if (this.breakCounter === 3) {
-          this.breakCounter = 0;
-          this.blockType = blockTypes.LONG_BREAK;
-        } else {
-          this.breakCounter += 1;
-          this.blockType = blockTypes.SHORT_BREAK;
-        }
-      } else {
-        this.blockType = blockTypes.POMODORO;
-      }
-    },
     useStoredValueOrSetDefault(name) {
       const value = localStorage.getItem(name);
       const parsed = value && JSON.parse(value);
@@ -315,7 +226,20 @@ export default {
         return this[name];
       }
       return parsed;
-    }
+    },
+    ...mapMutations({
+      resetBlock: "RESET_BLOCK",
+      setGoal: "SET_GOAL"
+    }),
+    ...mapActions([
+      "startBlock",
+      "stopBlock",
+      "completeBlock",
+      "toggleBlock",
+      "changeToPomodoro",
+      "changeToLongBreak",
+      "changeToShortBreak"
+    ])
   },
 
   watch: {
