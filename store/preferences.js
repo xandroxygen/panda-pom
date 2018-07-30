@@ -1,15 +1,10 @@
+import { getLocalStorage, setLocalStorage } from "../assets/localStorageAPI";
+
 const SHOULD_NOTIFY = "shouldNotify";
 const AUTOSTART = "autostart";
 const SHOULD_SHOW_TIMER = "shouldShowTimerInTitle";
 const SHOULD_SHOW_TOOLBAR = "shouldShowToolbar";
 
-const setLocalStorage = (type, value) => {
-  localStorage.setItem(type, JSON.stringify(value));
-};
-const getLocalStorage = type => {
-  const value = localStorage.getItem(type);
-  return value && JSON.parse(value);
-};
 const requestNotificationPermission = async shouldNotify => {
   try {
     if (Notification) {

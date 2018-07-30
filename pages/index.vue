@@ -46,6 +46,7 @@ export default {
     }
   },
   async mounted() {
+    this.$store.dispatch("initialize");
     await this.$store.dispatch("preferences/initialize");
     this.showToolbar = this.$store.state.preferences.shouldShowToolbar;
 

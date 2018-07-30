@@ -1,4 +1,8 @@
-const POMODORO_TIME = 5; // 25 * 60;
+import * as blockTypes from "../assets/blockTypes.js";
+import * as blockState from "../assets/state.js";
+import { getLocalStorage, setLocalStorage } from "../assets/localStorageAPI";
+
+const POMODORO_TIME = 25 * 60;
 const LONG_BREAK_TIME = 10 * 60;
 const SHORT_BREAK_TIME = 5 * 60;
 
@@ -11,10 +15,8 @@ const CLEAR_INTERVAL = "CLEAR_INTERVAL";
 const COMPLETE_POMODORO = "COMPLETE_POMODORO";
 const ADVANCE_BLOCK_TYPE = "ADVANCE_BLOCK_TYPE";
 const RESET_BLOCK = "RESET_BLOCK";
+const SET_COMPLETED = "SET_COMPLETED";
 const SET_GOAL = "SET_GOAL";
-
-import * as blockTypes from "../assets/blockTypes.js";
-import * as blockState from "../assets/state.js";
 
 export const state = () => ({
   completed: 0,
@@ -73,6 +75,12 @@ export const mutations = {
   },
   [SET_GOAL](state, goal) {
     state.goal = goal;
+  },
+  [COMPLETE_POMODORO](state) {
+    state.completed += 1;
+  },
+  [SET_COMPLETED](state, completed) {
+    state.completed = completed;
   },
   [ADVANCE_BLOCK_TYPE](state) {
     if (state.blockType === blockTypes.POMODORO) {
@@ -134,6 +142,7 @@ export const actions = {
 
     if (state.blockType === blockTypes.POMODORO) {
       commit(COMPLETE_POMODORO);
+      dispatch("logCompletedPom");
       const body =
         state.completed === state.goal
           ? "You achieved your goal! 🙌🏻 "
@@ -153,6 +162,10 @@ export const actions = {
     } else if (state.blockState !== blockState.TRANSITION) {
       commit(RESET_BLOCK);
     }
+  },
+  logCompletedPom({ state }) {
+    setLocalStorage("completedPoms", state.completed);
+    setLocalStorage("lastCompleted", new Date().toISOString());
   },
   toggleBlock({ state, dispatch }) {
     if (state.blockState === blockState.ACTIVE) {
@@ -197,5 +210,21 @@ export const actions = {
       });
     }
     return Promise.resolve();
+  },
+  initialize({ state, commit }) {
+    const lastCompleted = new Date(getLocalStorage("lastCompleted"));
+    const completedPoms = getLocalStorage("completedPoms");
+
+    const now = new Date();
+    const isNotToday =
+      lastCompleted.getUTCDate() !== now.getUTCDate() &&
+      lastCompleted.getUTCDay() !== now.getUTCDay();
+
+    if (isNotToday || (completedPoms === undefined || completedPoms == null)) {
+      commit(SET_COMPLETED, 0);
+      dispatch("logCompletedPom");
+    } else {
+      commit(SET_COMPLETED, completedPoms);
+    }
   }
 };
