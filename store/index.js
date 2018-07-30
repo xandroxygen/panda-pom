@@ -211,7 +211,7 @@ export const actions = {
     }
     return Promise.resolve();
   },
-  initialize({ state, commit }) {
+  initialize({ state, commit, dispatch }) {
     const lastCompleted = new Date(getLocalStorage("lastCompleted"));
     const completedPoms = getLocalStorage("completedPoms");
 
