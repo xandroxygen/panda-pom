@@ -1,6 +1,6 @@
 <template>
   <div class="is-flex-centered">
-      <button v-if="isNotMobile" class="button is-medium is-spacer">
+      <button v-if="isNotMobile" class="button is-medium is-hidden-element">
         <font-awesome-icon class="primary icon" icon="chevron-down"/>
       </button>
       <div class="has-large-t-pad has-med-v-pad">

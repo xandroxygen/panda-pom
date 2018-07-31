@@ -16,7 +16,7 @@
       <div class="level is-mobile">
         <div class="level-left">
           <div class="level-item">
-            <button class="button is-medium is-static" :class="hasNonMobileClass('is-spacer')">
+            <button class="button is-medium is-static" :class="hasNonMobileClass('is-hidden-element')">
               <font-awesome-icon class="primary icon" icon="cog"/>
             </button>
           </div>

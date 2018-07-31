@@ -35,7 +35,7 @@ export default {
   data() {
     return {
       showToolbar: true,
-      isLoading: false
+      isLoading: true
     };
   },
   methods: {
