@@ -13,5 +13,9 @@
     "nuxt": "^1.4.1",
     "nuxt-mq": "^1.0.5",
     "vue-mq": "^0.2.1"
+  },
+  "scripts": {
+    "build": "nuxt generate",
+    "build:github": "DEPLOY_ENV=GITHUB nuxt generate"
   }
 }

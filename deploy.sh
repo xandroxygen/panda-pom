@@ -5,10 +5,13 @@ aws s3 ls s3://pandapom.inseng.net
 aws s3 rm s3://pandapom.inseng.net --recursive
 
 # build site
-yarn nuxt generate
+yarn build
 
 # add all files to bucket
 aws s3 sync ./dist s3://pandapom.inseng.net
+
+# build site for github pages
+yarn build:github
 
 # copy files to /docs for github pages
 cp -R ./dist/* ./docs

@@ -1,4 +1,15 @@
+// only add `router.base = '/<repository-name>/'` if `DEPLOY_ENV` is `GH_PAGES`
+const routerBase =
+  process.env.DEPLOY_ENV === "GITHUB"
+    ? {
+        router: {
+          base: "/pandapom/"
+        }
+      }
+    : {};
+
 module.exports = {
+  ...routerBase,
   build: {
     postcss: {
       plugins: {
