@@ -76,4 +76,14 @@ export default {
 </script>
 
 <style>
+.has-small-h-pad {
+  padding: 0 0.5rem;
+}
+.input.title {
+  width: 5.5rem;
+  height: inherit;
+  padding-top: 0px;
+  padding-bottom: 0px;
+  line-height: 1;
+}
 </style>

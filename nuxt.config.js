@@ -43,7 +43,7 @@ module.exports = {
       }
     ]
   },
-  css: ["bulma/css/bulma.css"],
+  css: ["bulma/css/bulma.css", "~/css/main.css"],
   modules: [
     [
       "nuxt-mq",

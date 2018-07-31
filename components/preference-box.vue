@@ -1,6 +1,6 @@
 <template>
   <div class="overlay-container">
-    <div class="level is-mobile overlay">
+    <div class="level is-mobile overlay" v-if="isNotMobile">
       <div class="level-left">
         <div class="level-item">
           <button class="button is-medium" :class="hasMobileClass('is-static')"  @click="togglePreferences" @mouseover="togglePrefTitle" @mouseout="showPrefTitle = false">
@@ -16,7 +16,7 @@
       <div class="level is-mobile">
         <div class="level-left">
           <div class="level-item">
-            <button class="button is-medium is-spacer">
+            <button class="button is-medium is-static" :class="hasNonMobileClass('is-spacer')">
               <font-awesome-icon class="primary icon" icon="cog"/>
             </button>
           </div>
@@ -113,7 +113,10 @@ export default {
       return this.showPreferences ? "Preferences" : "Show Preferences";
     },
     hasNotifications() {
-      return this.$mq !== "mobile" && !!Notification;
+      return this.isNotMobile && typeof Notification !== undefined;
+    },
+    isNotMobile() {
+      return this.$mq !== "mobile";
     }
   },
   methods: {
@@ -139,5 +142,11 @@ export default {
 </script>
 
 <style>
+.pane {
+  border-radius: 0.5rem;
+  width: 20rem;
+  padding: 0.5rem;
+  background-color: hsl(0, 0%, 96%);
+}
 </style>
 

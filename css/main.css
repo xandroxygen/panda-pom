@@ -1,0 +1,12 @@
+.is-flex-centered {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.primary.icon {
+  color: #00d1b2;
+  pointer-events: none;
+}
+.is-spacer {
+  visibility: hidden;
+}

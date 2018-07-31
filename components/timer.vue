@@ -1,13 +1,13 @@
 <template>
   <div class="is-flex-centered">
-      <button v-if="$mq !== 'mobile'" class="button is-medium is-spacer">
+      <button v-if="isNotMobile" class="button is-medium is-spacer">
         <font-awesome-icon class="primary icon" icon="chevron-down"/>
       </button>
       <div class="has-large-t-pad has-med-v-pad">
         <h1 class="is-huge is-number" :class="hasMobileClass('is-less-huge')" @click="toggleBlock">{{parsedTime}}</h1>
         <progress class="progress is-small" :class="progressColor" :value="blockProgress" max="100">{{`${blockProgress}%`}}</progress> 
       </div>
-      <button v-if="$mq !== 'mobile'" class="button is-medium show-button" @click="toggleToolbar">
+      <button v-if="isNotMobile" class="button is-medium show-button" @click="toggleToolbar">
         <font-awesome-icon class="primary icon" icon="chevron-down"/>
       </button>
     </div>
@@ -38,6 +38,9 @@ export default {
         "is-primary": !this.isBlockStateTransition,
         "is-info": this.isBlockStateTransition
       };
+    },
+    isNotMobile() {
+      return this.$mq !== "mobile";
     },
     ...mapGetters(["isBlockStateTransition"]),
     ...mapState(["time", "blockLength"])
