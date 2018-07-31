@@ -148,5 +148,13 @@ export default {
   padding: 0.5rem;
   background-color: hsl(0, 0%, 96%);
 }
+.overlay-container {
+  position: relative;
+}
+.overlay {
+  position: absolute;
+  padding: 0.5rem;
+  z-index: 2;
+}
 </style>
 

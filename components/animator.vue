@@ -14,7 +14,8 @@ const validateAnimationTypes = types => {
         "fade-in-left",
         "fade-out-left",
         "reveal-top-left",
-        "hide-top-left"
+        "hide-top-left",
+        "is-hidden-element"
       ].indexOf(type) !== -1
     );
   });

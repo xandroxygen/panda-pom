@@ -1,6 +1,5 @@
 <template>
-  <div v-if="isLoading"></div>
-  <div v-else class="container fade-in">
+  <animator class="container" :condition="isLoading" :when-true="['is-hidden-element']" :when-false="['fade-in']">
     <page-title></page-title>
     <timer :class="hasNonMobileClass('is-flex-between')" @toggle-toolbar="toggleToolbar" ></timer>
     <progress-tracker :class="hasMobileClass('has-large-h-pad')"></progress-tracker>
@@ -10,7 +9,7 @@
     <animator :when-true="['fade-in']" :when-false="['fade-out']" :condition="showToolbar">
       <preference-box :class="[hasMobileClass('is-flex-centered')]"></preference-box>
     </animator>
-  </div>
+  </animator>
 </template>
 
 <script>
@@ -66,13 +65,5 @@ export default {
   display: flex;
   justify-content: space-between;
   align-items: center;
-}
-.overlay-container {
-  position: relative;
-}
-.overlay {
-  position: absolute;
-  padding: 0.5rem;
-  z-index: 2;
 }
 </style>
