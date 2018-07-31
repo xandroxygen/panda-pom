@@ -7,12 +7,12 @@
             <font-awesome-icon class="primary icon" icon="cog"/>
           </button>
         </div>
-        <div class="level-item" :class="fadePrefTitle">
+        <animator class="level-item" :condition="showPrefTitle" :when-true="['fade-in-left']" :when-false="['fade-out-left']">
             <span class="is-size-4">Show Preferences</span>
-          </div>
+        </animator>
       </div>
     </div>
-    <div class="pane" :class="animatePreferences">
+    <animator class="pane" :condition="showPreferences" :when-true="['reveal-top-left']" :when-false="['hide-top-left']">
       <div class="level is-mobile">
         <div class="level-left">
           <div class="level-item">
@@ -57,13 +57,18 @@
           </label>
         </div>
       </div>
-    </div>
+    </animator>
   </div>
 </template>
 
 <script>
 import mobileMixin from "../assets/mobileMixin";
+import Animator from "../components/animator.vue";
+
 export default {
+  components: {
+    Animator
+  },
   mixins: [mobileMixin],
   data() {
     return {
@@ -104,29 +109,14 @@ export default {
         this.$store.dispatch("preferences/setShouldShowToolbar", { value });
       }
     },
-    fadePrefTitle() {
-      return {
-        "fade-in-left": this.showPrefTitle,
-        "fade-out-left": !this.showPrefTitle
-      };
-    },
     prefTitleText() {
       return this.showPreferences ? "Preferences" : "Show Preferences";
-    },
-    animatePreferences() {
-      return {
-        "reveal-top-left": this.showPreferences,
-        "hide-top-left": !this.showPreferences
-      };
     },
     hasNotifications() {
       return this.$mq !== "mobile" && !!Notification;
     }
   },
   methods: {
-    hasMobileClass(c) {
-      return { [c]: this.$mq === "mobile" };
-    },
     togglePreferences() {
       this.showPreferences = !this.showPreferences;
       if (this.showPreferences) {

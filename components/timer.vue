@@ -46,9 +46,6 @@ export default {
     ...mapActions(["toggleBlock"]),
     toggleToolbar() {
       this.$emit("toggle-toolbar");
-    },
-    hasMobileClass(c) {
-      return { [c]: this.$mq === "mobile" };
     }
   }
 };

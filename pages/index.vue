@@ -4,8 +4,12 @@
     <page-title></page-title>
     <timer :class="hasNonMobileClass('is-flex-between')" @toggle-toolbar="toggleToolbar" ></timer>
     <progress-tracker :class="hasMobileClass('has-large-h-pad')"></progress-tracker>
-    <toolbar :class="animateToolbar"></toolbar>
-    <preference-box :class="[hasMobileClass('is-flex-centered'), animateToolbar]"></preference-box>
+    <animator :when-true="['fade-in']" :when-false="['fade-out']" :condition="showToolbar">
+      <toolbar></toolbar>
+    </animator>
+    <animator :when-true="['fade-in']" :when-false="['fade-out']" :condition="showToolbar">
+      <preference-box :class="[hasMobileClass('is-flex-centered')]"></preference-box>
+    </animator>
   </div>
 </template>
 
@@ -15,11 +19,13 @@ import ProgressTracker from "../components/progress-tracker.vue";
 import Timer from "../components/timer.vue";
 import Toolbar from "../components/toolbar.vue";
 import PreferenceBox from "../components/preference-box.vue";
+import Animator from "../components/animator.vue";
 import mobileMixin from "../assets/mobileMixin";
 
 export default {
   mixins: [mobileMixin],
   components: {
+    Animator,
     PageTitle,
     ProgressTracker,
     Timer,
@@ -31,14 +37,6 @@ export default {
       showToolbar: true,
       isLoading: true
     };
-  },
-  computed: {
-    animateToolbar() {
-      return {
-        "fade-in": this.showToolbar,
-        "fade-out": !this.showToolbar
-      };
-    }
   },
   methods: {
     toggleToolbar() {
