@@ -12,4 +12,4 @@ aws s3 sync ./dist s3://pandapom.inseng.net
 
 # copy files to /docs for github pages
 cp -R ./dist/* ./docs
-touch ./dist/nojekyll
+touch ./docs/nojekyll
