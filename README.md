@@ -14,11 +14,20 @@ yarn nuxt
 
 ## Deployment
 
-To deploy PandaPom to `inseng`, run
+To deploy the current HEAD of master to Github Pages, choose a version (eg `v0.5.2`) and run
+
+```
+./deploy.sh <version>
+```
+
+This will build the site and place the generated files in the `/docs` folder, commit those
+changes, tag them with the version provided, and push everythin.
+
+To deploy any version of PandaPom to `inseng`, check out that version and run
 
 ```
 vaulted shell inseng
-./deploy.sh
+./deploy-inseng.sh
 ```
 
-If you have no clue what `inseng` is, then you probably shouldn't deploy this 🤷🏻‍
+If you have no clue what `inseng` is, then you probably shouldn't deploy this way 🤷🏻‍

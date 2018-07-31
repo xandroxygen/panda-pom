@@ -1,14 +1,10 @@
-# check for bucket present, if not exit
-aws s3 ls s3://pandapom.inseng.net
-
-# remove all files in the bucket
-aws s3 rm s3://pandapom.inseng.net --recursive
-
-# build site
-yarn build
-
-# add all files to bucket
-aws s3 sync ./dist s3://pandapom.inseng.net
+# get provided version or exit
+version=$1
+if [[ -z $version ]]; then
+  echo "Version required"
+  echo "Usage: $0 <version>"
+  exit 1
+fi
 
 # build site for github pages
 yarn build:github
@@ -16,3 +12,11 @@ yarn build:github
 # copy files to /docs for github pages
 cp -R ./dist/* ./docs
 touch ./docs/.nojekyll
+
+# commit and tag changes
+git commit -qa --allow-empty -m "release $version"
+git tag $version
+
+# deploy new release
+git push origin $version
+git push
