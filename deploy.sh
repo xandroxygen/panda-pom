@@ -10,10 +10,12 @@ fi
 yarn build:github
 
 # copy files to /docs for github pages
+rm -rf ./docs/*
 cp -R ./dist/* ./docs
 touch ./docs/.nojekyll
 
 # commit and tag changes
+git add ./docs
 git commit -qa --allow-empty -m "release $version"
 git tag $version
 
