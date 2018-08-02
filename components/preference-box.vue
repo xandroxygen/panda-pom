@@ -1,4 +1,5 @@
 <template>
+<no-ssr>
   <div class="overlay-container">
     <div class="level is-mobile overlay" v-if="isNotMobile">
       <div class="level-left">
@@ -59,6 +60,7 @@
       </div>
     </animator>
   </div>
+</no-ssr>
 </template>
 
 <script>

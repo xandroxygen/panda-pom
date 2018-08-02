@@ -1,16 +1,18 @@
 <template>
-  <div class="is-flex-centered">
+  <no-ssr>
+    <div class="is-flex-centered"> 
       <button v-if="isNotMobile" class="button is-medium is-hidden-element">
-        <font-awesome-icon class="primary icon" icon="chevron-down"/>
+        <font-awesome-icon class="primary icon" icon="chevron-down" />
       </button>
       <div class="has-large-t-pad has-med-v-pad">
         <h1 class="is-huge is-number" :class="hasMobileClass('is-less-huge')" @click="toggleBlock">{{parsedTime}}</h1>
         <progress class="progress is-small" :class="progressColor" :value="blockProgress" max="100">{{`${blockProgress}%`}}</progress> 
       </div>
       <button v-if="isNotMobile" class="button is-medium show-button" @click="toggleToolbar">
-        <font-awesome-icon class="primary icon" icon="chevron-down"/>
+        <font-awesome-icon class="primary icon" icon="chevron-down" />
       </button>
     </div>
+  </no-ssr>
 </template>
 
 <script>
